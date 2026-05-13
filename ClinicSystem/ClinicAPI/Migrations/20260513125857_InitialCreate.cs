@@ -315,8 +315,8 @@ namespace ClinicAPI.Migrations
                     SpecializationId = table.Column<int>(type: "int", nullable: false),
                     AppointmentDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CancellationReason = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CancellationReason = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -371,9 +371,9 @@ namespace ClinicAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AppointmentId = table.Column<int>(type: "int", nullable: false),
-                    DoctorNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Treatment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DoctorNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Treatment = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
