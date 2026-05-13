@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-// Bind to the ports used by the project (see Properties/launchSettings.json)
+// Explicitly bind to the ports to avoid conflicts with port 5000
 builder.WebHost.UseUrls("http://localhost:5298", "https://localhost:7268");
 
 // ── Database & EF Core ──────────────────────────────────────────────────────

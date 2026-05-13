@@ -1,11 +1,9 @@
-﻿// ClinicReporting — Reporting Application
+// ClinicReporting — Reporting Application
 // ⚠ IMPORTANT: This project has NO reference to ClinicAPI and NO direct database access.
 //              All data is retrieved exclusively through HTTP calls to the Web API.
 
 var builder = WebApplication.CreateBuilder(args);
-// Ensure the app binds to the ports defined in launchSettings.json to avoid
-// falling back to the default port (5000) which can cause AddressInUse errors
-// when multiple apps are run simultaneously.
+// Explicitly bind to the ports to avoid conflicts with port 5000
 builder.WebHost.UseUrls("http://localhost:5053", "https://localhost:7298");
 
 // ── HttpClient — ALL data access goes through the ClinicAPI ─────────────────

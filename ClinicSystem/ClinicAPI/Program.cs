@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,7 @@ using ClinicAPI.Models;
 using ClinicAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
-// Bind to the ports used by the project (see Properties/launchSettings.json)
+// Explicitly bind to the ports to avoid conflicts with port 5000
 builder.WebHost.UseUrls("http://localhost:5235", "https://localhost:7053");
 
 // ── Database & EF Core ──────────────────────────────────────────────────────
