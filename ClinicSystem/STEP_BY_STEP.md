@@ -289,13 +289,13 @@ git push origin main
 >
 > Use EF Core directly (not API calls). Apply `[Authorize(Roles = 'ClinicManager')]` to all actions. Add success/error TempData messages."
 
-- [ ] Create all files
-- [ ] Log in as Clinic Manager and test:
-  - [ ] Create a new doctor
-  - [ ] Edit the doctor's specializations
-  - [ ] Set a weekly schedule
-  - [ ] Add a leave period
-  - [ ] Add a new specialization
+- [x] Create all files
+- [x] Log in as Clinic Manager and test:
+  - [x] Create a new doctor
+  - [x] Edit the doctor's specializations
+  - [x] Set a weekly schedule
+  - [x] Add a leave period
+  - [x] Add a new specialization
 
 ---
 
