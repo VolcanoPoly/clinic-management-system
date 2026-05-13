@@ -45,6 +45,6 @@ app.UseAuthorization();
 // Default route sends unauthenticated users straight to the login page
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
