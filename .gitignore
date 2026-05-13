@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+ClinicSystem/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+out/
+dist/
+publish/
+**/bin/
+**/obj/
+**/out/
+**/dist/
+**/publish/
+
+# IDE caches and logs
+*.cache
+*.log
+*.db
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# OS files
+.DS_Store
+Thumbs.db
