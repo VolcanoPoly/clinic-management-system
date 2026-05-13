@@ -36,8 +36,12 @@
                 </div>
             </div>
             <div class="mt-4">
-                <button class="btn btn-dark disabled">Manage Doctors</button>
-                <button class="btn btn-outline-dark disabled">System Logs</button>
+                <a asp-action="DoctorsIndex" class="btn btn-dark">
+                    <i class="bi bi-people"></i> Manage Doctors
+                </a>
+                <a asp-action="DoctorsIndex" class="btn btn-outline-dark">
+                    <i class="bi bi-calendar2"></i> Doctor Schedules
+                </a>
             </div>
         </div>
     </div>

@@ -1,0 +1,103 @@
+@model LeaveViewModel
+
+@{
+    ViewData["Title"] = "Manage Leave";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Leave Management for @Model.DoctorName</h2>
+            <p class="text-muted">Mark doctor as unavailable on specific dates</p>
+        </div>
+        <a asp-action="SchedulesIndex" asp-route-doctorId="@Model.DoctorId" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Schedule
+        </a>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white">
+                    <strong>Add New Leave</strong>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="SchedulesLeaveCreate" class="needs-validation">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="doctorId" value="@Model.DoctorId" />
+
+                        <div class="mb-3">
+                            <label for="StartDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="StartDate" 
+                                   name="startDateString" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="EndDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="EndDate" 
+                                   name="endDateString" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Reason" class="form-label">Reason (Optional)</label>
+                            <textarea class="form-control" id="Reason" name="reason" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Add Leave
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mb-3">Leave History</h3>
+
+    @if (Model.Leaves.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var leave in Model.Leaves)
+                    {
+                        <tr>
+                            <td>@leave.StartDate.ToString("MMM dd, yyyy")</td>
+                            <td>@leave.EndDate.ToString("MMM dd, yyyy")</td>
+                            <td>@(string.IsNullOrEmpty(leave.Reason) ? "-" : leave.Reason)</td>
+                            <td>
+                                <form method="post" asp-action="SchedulesLeaveDelete" 
+                                      asp-route-doctorId="@Model.DoctorId" asp-route-leaveId="@leave.Id" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i> No leave records found.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

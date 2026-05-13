@@ -1,0 +1,85 @@
+@model ScheduleViewModel
+
+@{
+    ViewData["Title"] = "Edit Schedule";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Schedule for @Model.DoctorName</h2>
+            <p class="text-muted">Weekly working hours (Monday - Friday)</p>
+        </div>
+        <a asp-action="SchedulesLeave" asp-route-doctorId="@Model.DoctorId" class="btn btn-warning">
+            <i class="bi bi-calendar-x"></i> Manage Leave
+        </a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>Please fix the following errors:</strong>
+            <ul class="mb-0">
+                @foreach (var key in ViewData.ModelState.Keys)
+                {
+                    var modelState = ViewData.ModelState[key];
+                    if (modelState.Errors.Count > 0)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    <form method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            @foreach (var day in Model.DaySchedules)
+            {
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white">
+                            <strong>@day.DayName</strong>
+                        </div>
+                        <div class="card-body">
+                            <input type="hidden" name="daySchedules[@(Model.DaySchedules.IndexOf(day))].Id" value="@day.Id" />
+                            <input type="hidden" name="daySchedules[@(Model.DaySchedules.IndexOf(day))].DoctorId" value="@day.DoctorId" />
+                            <input type="hidden" name="daySchedules[@(Model.DaySchedules.IndexOf(day))].DayOfWeek" value="@day.DayOfWeek" />
+                            <input type="hidden" name="daySchedules[@(Model.DaySchedules.IndexOf(day))].DayName" value="@day.DayName" />
+
+                            <div class="mb-3">
+                                <label for="start_@day.DayOfWeek" class="form-label">Start Time</label>
+                                <input type="time" class="form-control" id="start_@day.DayOfWeek" 
+                                       name="daySchedules[@(Model.DaySchedules.IndexOf(day))].StartTimeString" 
+                                       value="@day.StartTimeString" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="end_@day.DayOfWeek" class="form-label">End Time</label>
+                                <input type="time" class="form-control" id="end_@day.DayOfWeek" 
+                                       name="daySchedules[@(Model.DaySchedules.IndexOf(day))].EndTimeString" 
+                                       value="@day.EndTimeString" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Save Schedule</button>
+            <a asp-action="DoctorsIndex" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
