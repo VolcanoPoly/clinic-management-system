@@ -146,4 +146,11 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<AppointmentHub>("/hubs/appointment");
 
+// ── Seed development data on startup ───────────────────────────────────────
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    await DataSeeder.SeedAsync(scope.ServiceProvider);
+}
+
 app.Run();
