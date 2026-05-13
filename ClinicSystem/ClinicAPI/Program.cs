@@ -9,6 +9,8 @@ using ClinicAPI.Models;
 using ClinicAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+// Bind to the ports used by the project (see Properties/launchSettings.json)
+builder.WebHost.UseUrls("http://localhost:5235", "https://localhost:7053");
 
 // ── Database & EF Core ──────────────────────────────────────────────────────
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

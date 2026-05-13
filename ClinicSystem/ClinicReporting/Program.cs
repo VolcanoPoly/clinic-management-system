@@ -3,6 +3,10 @@
 //              All data is retrieved exclusively through HTTP calls to the Web API.
 
 var builder = WebApplication.CreateBuilder(args);
+// Ensure the app binds to the ports defined in launchSettings.json to avoid
+// falling back to the default port (5000) which can cause AddressInUse errors
+// when multiple apps are run simultaneously.
+builder.WebHost.UseUrls("http://localhost:5053", "https://localhost:7298");
 
 // ── HttpClient — ALL data access goes through the ClinicAPI ─────────────────
 builder.Services.AddHttpClient("ClinicApiClient", client =>

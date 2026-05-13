@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-5 text-center">
+                <h1 class="display-4 text-primary">Welcome, @User.Identity?.Name!</h1>
+                <p class="lead">This is your personal Patient Dashboard.</p>
+                <hr class="my-4">
+                <div class="row g-4 mt-2">
+                    <div class="col-md-4">
+                        <div class="p-4 bg-light rounded shadow-sm h-100">
+                            <h3>My Appointments</h3>
+                            <p>View and manage your upcoming visits.</p>
+                            <button class="btn btn-outline-primary disabled">View All</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4 bg-light rounded shadow-sm h-100">
+                            <h3>Book Appointment</h3>
+                            <p>Find a doctor and schedule a new visit.</p>
+                            <button class="btn btn-primary disabled">Book Now</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4 bg-light rounded shadow-sm h-100">
+                            <h3>Medical Records</h3>
+                            <p>View your past diagnoses and prescriptions.</p>
+                            <button class="btn btn-outline-primary disabled">View History</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
