@@ -1062,7 +1062,7 @@ Prepare to explain (without notes):
 |-------|-------|-----|------|
 | 1 — Setup | 1–6 | Member 1 | Install tools, create GitHub repo, create solution, first commit |
 | 2 — Database | 7–12 | Member 1 | Entity classes, DbContext, migrations, seed data |
-| 3 — Auth | 13–15 | Member 3 | Identity login, role dashboards, role-based access |
+| 3 — Auth | 13–15 | Member 2 | Identity login, role dashboards, role-based access |
 | 4 — Doctor Mgmt | 16-17 | Member 3 | Doctor profiles, specializations, schedules, leaves |
 | 5 — Booking | 18-19 | Member 2 | Multi-step booking flow, availability check, notifications |
 | 6 — Lifecycle | 20-21 | Member 2 | Status transitions, validation, status history |
