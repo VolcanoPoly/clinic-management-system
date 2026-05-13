@@ -1,0 +1,84 @@
+@model List<ClinicMVC.Models.ViewModels.AppointmentListItemViewModel>
+@{
+    ViewData["Title"] = "My Appointments";
+    var upcoming = Model.Where(a =>
+        a.AppointmentDateTime >= DateTime.Now &&
+        a.Status != ClinicAPI.Models.AppointmentStatus.Cancelled &&
+        a.Status != ClinicAPI.Models.AppointmentStatus.Missed).ToList();
+    var past = Model.Except(upcoming).ToList();
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">My Appointments</h2>
+
+    @if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+    @if (TempData["Error"] != null)   { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+    <h5>Upcoming</h5>
+    @if (!upcoming.Any())
+    {
+        <p class="text-muted">No upcoming appointments.</p>
+    }
+    else
+    {
+        <div class="table-responsive mb-4">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Patient</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in upcoming.OrderBy(x => x.AppointmentDateTime))
+                    {
+                        <tr>
+                            <td>@a.AppointmentDateTime.ToString("dd MMM yyyy")<br /><small class="text-muted">@a.AppointmentDateTime.ToString("hh:mm tt")</small></td>
+                            <td>@a.PatientName</td>
+                            <td>@a.SpecializationName</td>
+                            <td>@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td><a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary">View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h5>Past</h5>
+    @if (!past.Any())
+    {
+        <p class="text-muted">No past appointments.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-muted">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Patient</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in past.OrderByDescending(x => x.AppointmentDateTime))
+                    {
+                        <tr>
+                            <td>@a.AppointmentDateTime.ToString("dd MMM yyyy")<br /><small>@a.AppointmentDateTime.ToString("hh:mm tt")</small></td>
+                            <td>@a.PatientName</td>
+                            <td>@a.SpecializationName</td>
+                            <td>@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td><a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
+using ClinicMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Explicitly bind to the ports to avoid conflicts with port 5000
@@ -42,6 +43,9 @@ builder.Services.AddHttpClient("ClinicApiClient", client =>
         builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7000");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
+
+// ── Application Services ────────────────────────────────────────────────────
+builder.Services.AddScoped<AvailabilityService>();
 
 // ── MVC with Views ──────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();

@@ -1,0 +1,313 @@
+@model ClinicMVC.Models.ViewModels.AppointmentDetailViewModel
+@{
+    ViewData["Title"] = "Appointment Details";
+    var isDoctor = User.IsInRole("Doctor");
+    var isReceptionist = User.IsInRole("Receptionist");
+    var isPatient = User.IsInRole("Patient");
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Appointment Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Appointment #@Model.Id</h5>
+                    <div>@Html.Partial("_StatusBadge", Model.Status)</div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="text-muted small">PATIENT</p>
+                            <p class="fw-semibold">@Model.PatientName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted small">DOCTOR</p>
+                            <p class="fw-semibold">@Model.DoctorName</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="text-muted small">DATE & TIME</p>
+                            <p class="fw-semibold">
+                                @Model.AppointmentDateTime.ToString("dddd, dd MMMM yyyy")
+                                <br />
+                                <span class="text-primary">@Model.AppointmentDateTime.ToString("hh:mm tt")</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted small">SPECIALIZATION</p>
+                            <p class="fw-semibold">@Model.SpecializationName</p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                    {
+                        <div class="mb-4">
+                            <p class="text-muted small">NOTES</p>
+                            <p>@Model.Notes</p>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.CancellationReason) && 
+                         (Model.Status == ClinicAPI.Models.AppointmentStatus.Cancelled || 
+                          Model.Status == ClinicAPI.Models.AppointmentStatus.Missed))
+                    {
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <p class="text-muted small mb-1">CANCELLATION / MISS REASON</p>
+                            <p class="mb-0">@Model.CancellationReason</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Status History Timeline -->
+            @if (Model.StatusHistory.Any())
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Status History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            @foreach (var history in Model.StatusHistory.OrderBy(h => h.ChangedAt))
+                            {
+                                var isLast = history == Model.StatusHistory.OrderBy(h => h.ChangedAt).Last();
+                                <div class="timeline-item @(isLast ? "last" : "")">
+                                    <div class="timeline-marker">
+                                        <div class="timeline-dot"></div>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <div>
+                                                <span class="badge bg-secondary me-2">@history.OldStatus.ToString()</span>
+                                                <span class="text-muted">→</span>
+                                                <span class="badge bg-primary ms-2">@history.NewStatus.ToString()</span>
+                                            </div>
+                                            <small class="text-muted">@history.ChangedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                        </div>
+                                        <p class="mb-0 text-muted">by <strong>@history.ChangedByName</strong></p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Action Panel -->
+        <div class="col-lg-4">
+            @if (Model.AllowedTransitions.Any())
+            {
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (isReceptionist)
+                        {
+                            <p class="text-muted small mb-3">Available status transitions:</p>
+                            
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.Confirmed))
+                            {
+                                <form asp-action="UpdateStatus" method="post" class="mb-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <input type="hidden" name="newStatus" value="@ClinicAPI.Models.AppointmentStatus.Confirmed" />
+                                    <button type="submit" class="btn btn-success btn-sm w-100 mb-2">
+                                        ✓ Confirm Appointment
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.CheckedIn))
+                            {
+                                <form asp-action="UpdateStatus" method="post" class="mb-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <input type="hidden" name="newStatus" value="@ClinicAPI.Models.AppointmentStatus.CheckedIn" />
+                                    <button type="submit" class="btn btn-info btn-sm w-100 mb-2">
+                                        ✓ Mark Check-In
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.Cancelled))
+                            {
+                                <button type="button" class="btn btn-danger btn-sm w-100"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancelReasonModal">
+                                    ✗ Cancel Appointment
+                                </button>
+                            }
+                        }
+                        else if (isDoctor)
+                        {
+                            <p class="text-muted small mb-3">Available status transitions:</p>
+                            
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.InProgress))
+                            {
+                                <form asp-action="UpdateStatus" method="post" class="mb-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <input type="hidden" name="newStatus" value="@ClinicAPI.Models.AppointmentStatus.InProgress" />
+                                    <button type="submit" class="btn btn-warning btn-sm w-100 mb-2">
+                                        ⏱ Start Appointment
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.Completed))
+                            {
+                                <form asp-action="UpdateStatus" method="post" class="mb-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <input type="hidden" name="newStatus" value="@ClinicAPI.Models.AppointmentStatus.Completed" />
+                                    <button type="submit" class="btn btn-success btn-sm w-100 mb-2">
+                                        ✓ Complete Visit
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.Missed))
+                            {
+                                <button type="button" class="btn btn-danger btn-sm w-100"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#missReasonModal">
+                                    ✗ Mark as Missed
+                                </button>
+                            }
+                        }
+                        else if (isPatient)
+                        {
+                            @if (Model.AllowedTransitions.Contains(ClinicAPI.Models.AppointmentStatus.Cancelled))
+                            {
+                                <button type="button" class="btn btn-danger btn-sm w-100"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancelReasonModal">
+                                    ✗ Cancel This Appointment
+                                </button>
+                            }
+                            else
+                            {
+                                <p class="alert alert-info small mb-0">No actions available for this appointment status.</p>
+                            }
+                        }
+
+                        <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">
+                            ← Back to My Appointments
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="alert alert-info small mb-0">No actions available for this appointment status.</p>
+                        <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">
+                            ← Back
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Cancel/Miss Reason Modal -->
+<div class="modal fade" id="cancelReasonModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="@(isPatient ? "Cancel" : "UpdateStatus")" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                @if (!isPatient)
+                {
+                    <input type="hidden" name="newStatus" value="@ClinicAPI.Models.AppointmentStatus.Cancelled" />
+                }
+                <div class="modal-header">
+                    <h5 class="modal-title">@(isPatient ? "Cancel Appointment" : "Cancel Appointment")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Reason</label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="Please provide a reason..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Confirm Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="missReasonModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UpdateStatus" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="newStatus" value="@ClinicAPI.Models.AppointmentStatus.Missed" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Mark as Missed</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Reason (optional)</label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="Reason for missed appointment..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Confirm Mark as Missed</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<style>
+.timeline {
+    position: relative;
+    padding: 20px 0 0 30px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-item:not(.last)::after {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 30px;
+    bottom: -20px;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    top: 0;
+}
+
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #0d6efd;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #0d6efd;
+}
+
+.timeline-content {
+    padding-top: 2px;
+}
+</style>
+}

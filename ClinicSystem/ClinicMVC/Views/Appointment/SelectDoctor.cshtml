@@ -1,0 +1,93 @@
+@model ClinicMVC.Models.ViewModels.AppointmentSelectDoctorViewModel
+@{
+    ViewData["Title"] = "Choose Doctor";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-1">Choose a Doctor</h2>
+    <p class="text-muted mb-2">Step 2 of 4 — Specialization: <strong>@Model.SpecializationName</strong></p>
+
+    <div class="progress mb-4" style="height:6px">
+        <div class="progress-bar" style="width:50%"></div>
+    </div>
+
+    @if (!Model.Doctors.Any())
+    {
+        <div class="alert alert-warning">No doctors available for this specialization right now.</div>
+    }
+    else
+    {
+        <form asp-action="SelectSlot" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="SpecializationId" value="@Model.SpecializationId" />
+            <input type="hidden" name="PatientId" value="@Model.PatientId" />
+
+            <div class="row g-3 mb-4">
+                @foreach (var doc in Model.Doctors)
+                {
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm doctor-card" data-doctorid="@doc.Id">
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio"
+                                           name="SelectedDoctorId" value="@doc.Id"
+                                           id="doc_@doc.Id" required />
+                                    <label class="form-check-label fw-bold fs-5" for="doc_@doc.Id">
+                                        @doc.FullName
+                                    </label>
+                                </div>
+                                <p class="text-muted small mt-2">@doc.Bio</p>
+                                <div class="mb-2">
+                                    @foreach (var s in doc.SpecializationNames)
+                                    {
+                                        <span class="badge bg-secondary me-1">@s</span>
+                                    }
+                                </div>
+                                @if (doc.NextAvailableDate.HasValue)
+                                {
+                                    <small class="text-success">
+                                        <i class="bi bi-calendar-check"></i>
+                                        Next available: @doc.NextAvailableDate.Value.ToString("ddd, dd MMM yyyy")
+                                    </small>
+                                }
+                                else
+                                {
+                                    <small class="text-danger">No availability in the next 30 days</small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="d-flex gap-2">
+                <a asp-action="Book" class="btn btn-outline-secondary">&larr; Back</a>
+                <button type="submit" class="btn btn-primary">Next: Choose Time &rarr;</button>
+            </div>
+        </form>
+    }
+</div>
+
+<style>
+    .doctor-card { cursor: pointer; transition: border-color .15s; border: 2px solid transparent; }
+    .doctor-card.selected { border-color: #0d6efd; background: #f0f6ff; }
+</style>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('input[name="SelectedDoctorId"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+            radio.closest('.doctor-card').classList.add('selected');
+        });
+    });
+    // Clicking the card selects the radio
+    document.querySelectorAll('.doctor-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const radio = card.querySelector('input[type="radio"]');
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change'));
+        });
+    });
+</script>
+}

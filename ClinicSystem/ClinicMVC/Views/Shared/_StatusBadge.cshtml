@@ -1,0 +1,17 @@
+@model ClinicAPI.Models.AppointmentStatus
+
+@{
+    var statusBadgeClass = Model switch
+    {
+        ClinicAPI.Models.AppointmentStatus.Requested => "bg-secondary",
+        ClinicAPI.Models.AppointmentStatus.Confirmed => "bg-primary",
+        ClinicAPI.Models.AppointmentStatus.CheckedIn => "bg-info",
+        ClinicAPI.Models.AppointmentStatus.InProgress => "bg-warning",
+        ClinicAPI.Models.AppointmentStatus.Completed => "bg-success",
+        ClinicAPI.Models.AppointmentStatus.Cancelled => "bg-danger",
+        ClinicAPI.Models.AppointmentStatus.Missed => "bg-dark",
+        _ => "bg-secondary"
+    };
+}
+
+<span class="badge @statusBadgeClass">@Model.ToString()</span>
