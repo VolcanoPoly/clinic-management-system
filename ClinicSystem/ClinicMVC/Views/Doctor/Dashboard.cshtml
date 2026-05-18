@@ -2,34 +2,46 @@
     ViewData["Title"] = "Doctor Dashboard";
 }
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-5 text-center bg-primary text-white rounded">
-                <h1 class="display-4">Welcome, Doctor!</h1>
-                <p class="lead">Manage your schedule and patients here.</p>
-            </div>
-        </div>
-    </div>
+<div class="welcome-banner doctor-banner" data-aos="fade-down">
+    <div class="role-badge"><i class="fa-solid fa-stethoscope"></i> Doctor Portal</div>
+    <h1><i class="fa-solid fa-user-doctor me-2"></i> Welcome, Dr. @User.Identity?.Name!</h1>
+    <p>Manage your appointments and patient consultations.</p>
 </div>
 
-<div class="row mt-4 g-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <h2 class="h4">Today's Schedule</h2>
-                <p class="text-muted">You have 0 appointments scheduled for today.</p>
-                <button class="btn btn-primary disabled">View Schedule</button>
+<div class="row g-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+        <a asp-controller="Appointment" asp-action="DoctorAppointments" class="stat-card">
+            <div class="stat-icon" style="background:#d1fae5; color:#065f46;">
+                <i class="fa-solid fa-calendar-days"></i>
             </div>
+            <div class="stat-title">My Appointments</div>
+            <div class="stat-value">Today &amp; Upcoming</div>
+            <div class="stat-desc">View all your scheduled patient consultations.</div>
+            <div class="stat-action" style="color:#059669;">View Schedule <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+    </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="stat-card" style="cursor:default; opacity:.65;">
+            <div class="stat-icon" style="background:#f3f4f6; color:#9ca3af;">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-title">Recent Patients</div>
+            <div class="stat-value">Patient History</div>
+            <div class="stat-desc">Review past consultations and visit records.</div>
+            <div class="stat-action" style="color:#9ca3af;">Coming Soon <i class="fa-solid fa-clock"></i></div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <h2 class="h4">Recent Patients</h2>
-                <p class="text-muted">No recent patient history to show.</p>
-                <button class="btn btn-outline-primary disabled">Patient Search</button>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="stat-card" style="cursor:default; opacity:.65;">
+            <div class="stat-icon" style="background:#f3f4f6; color:#9ca3af;">
+                <i class="fa-solid fa-file-prescription"></i>
             </div>
+            <div class="stat-title">Prescriptions</div>
+            <div class="stat-value">Manage Prescriptions</div>
+            <div class="stat-desc">Write and manage patient prescriptions.</div>
+            <div class="stat-action" style="color:#9ca3af;">Coming Soon <i class="fa-solid fa-clock"></i></div>
         </div>
     </div>
 </div>

@@ -1,13 +1,14 @@
 @model ClinicMVC.Models.ViewModels.LoginViewModel
 @{
     ViewData["Title"] = "Login";
-    Layout = "_Layout";
+    ViewData["AuthPage"] = true;
 }
 
 <div class="auth-wrapper">
     <div class="card auth-card border-0">
+
         <div class="auth-header">
-            <div class="auth-logo">
+            <div class="auth-logo float-anim">
                 <i class="fa-solid fa-user-doctor"></i>
             </div>
             <h2>Welcome Back</h2>
@@ -16,15 +17,13 @@
 
         <div class="auth-body">
             <form asp-action="Login" method="post">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3"></div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3 small"></div>
 
                 <div class="mb-3">
                     <label asp-for="Email" class="form-label">Email Address</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0">
-                            <i class="fa-regular fa-envelope text-muted"></i>
-                        </span>
-                        <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="you@example.com" style="border-left:none" />
+                        <span class="input-group-text border-end-0"><i class="fa-regular fa-envelope"></i></span>
+                        <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="you@example.com" autocomplete="email" />
                     </div>
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
@@ -32,17 +31,15 @@
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label">Password</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0">
-                            <i class="fa-solid fa-lock text-muted"></i>
-                        </span>
-                        <input asp-for="Password" class="form-control border-start-0 ps-0" placeholder="••••••••" style="border-left:none" />
+                        <span class="input-group-text border-end-0"><i class="fa-solid fa-lock"></i></span>
+                        <input asp-for="Password" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="current-password" />
                     </div>
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
 
                 <div class="mb-4 form-check">
                     <input asp-for="RememberMe" class="form-check-input" />
-                    <label asp-for="RememberMe" class="form-check-label text-muted" style="font-size:.875rem">Remember me</label>
+                    <label asp-for="RememberMe" class="form-check-label">Remember me</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2">
@@ -54,6 +51,7 @@
         <div class="auth-footer-link">
             Don't have an account? <a asp-action="Register">Register as a Patient</a>
         </div>
+
     </div>
 </div>
 

@@ -2,51 +2,46 @@
     ViewData["Title"] = "Patient Dashboard";
 }
 
-<div class="welcome-banner">
+<div class="welcome-banner" data-aos="fade-down">
+    <div class="role-badge"><i class="fa-solid fa-user-injured"></i> Patient Portal</div>
     <h1><i class="fa-solid fa-hand-wave me-2"></i> Welcome, @User.Identity?.Name!</h1>
-    <p>This is your personal Patient Dashboard — manage your health appointments in one place.</p>
+    <p>Manage your health appointments and medical records all in one place.</p>
 </div>
 
 <div class="row g-4">
-    <div class="col-md-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
         <a asp-controller="Appointment" asp-action="MyAppointments" class="stat-card">
             <div class="stat-icon" style="background:#dbeafe; color:#1a6fc4;">
                 <i class="fa-solid fa-calendar-check"></i>
             </div>
             <div class="stat-title">My Appointments</div>
-            <div class="fw-600" style="font-size:1rem;">View &amp; Manage</div>
-            <div class="stat-desc">See all your upcoming and past visits.</div>
-            <div class="stat-action">
-                View All <i class="fa-solid fa-arrow-right"></i>
-            </div>
+            <div class="stat-value">View &amp; Manage</div>
+            <div class="stat-desc">See all your upcoming and past clinic visits.</div>
+            <div class="stat-action">View All <i class="fa-solid fa-arrow-right"></i></div>
         </a>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
         <a asp-controller="Appointment" asp-action="Book" class="stat-card">
             <div class="stat-icon" style="background:#d1fae5; color:#16a34a;">
                 <i class="fa-solid fa-calendar-plus"></i>
             </div>
             <div class="stat-title">Book Appointment</div>
-            <div class="fw-600" style="font-size:1rem;">New Visit</div>
+            <div class="stat-value">New Visit</div>
             <div class="stat-desc">Find a doctor and schedule a new appointment.</div>
-            <div class="stat-action" style="color:#16a34a;">
-                Book Now <i class="fa-solid fa-arrow-right"></i>
-            </div>
+            <div class="stat-action" style="color:#16a34a;">Book Now <i class="fa-solid fa-arrow-right"></i></div>
         </a>
     </div>
 
-    <div class="col-md-4">
-        <div class="stat-card" style="cursor:default; opacity:.7;">
-            <div class="stat-icon" style="background:#f3f4f6; color:#6b7280;">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="stat-card" style="cursor:default; opacity:.65;">
+            <div class="stat-icon" style="background:#f3f4f6; color:#9ca3af;">
                 <i class="fa-solid fa-file-medical"></i>
             </div>
             <div class="stat-title">Medical Records</div>
-            <div class="fw-600" style="font-size:1rem;">View History</div>
-            <div class="stat-desc">Access your past diagnoses and prescriptions.</div>
-            <div class="stat-action" style="color:#6b7280;">
-                Coming Soon <i class="fa-solid fa-clock"></i>
-            </div>
+            <div class="stat-value">View History</div>
+            <div class="stat-desc">Access past diagnoses and prescriptions.</div>
+            <div class="stat-action" style="color:#9ca3af;">Coming Soon <i class="fa-solid fa-clock"></i></div>
         </div>
     </div>
 </div>
