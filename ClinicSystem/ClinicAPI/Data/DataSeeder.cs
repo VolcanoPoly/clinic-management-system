@@ -35,128 +35,82 @@ public static class DataSeeder
         var patient1      = await EnsureUserAsync(userManager, "patient1@medcenter.com",      "Yousef",    "Mansoor",   "Patient@123",      "Patient");
         var patient2      = await EnsureUserAsync(userManager, "patient2@medcenter.com",      "Layla",     "Qassim",    "Patient@123",      "Patient");
 
-        // ── 3. Specializations ──────────────────────────────────────────────
-        if (!await context.Specializations.AnyAsync())
+        // ── 3. Specializations — add any that are missing by name ───────────
+        var allSpecNames = new[]
         {
-            var specs = new List<Specialization>
+            ("General Practice", "Primary care and routine health checkups for all ages"),
+            ("Cardiology",       "Heart and cardiovascular system conditions"),
+            ("Dermatology",      "Skin, hair, and nail conditions"),
+            ("Pediatrics",       "Medical care for infants, children, and adolescents"),
+            ("Orthopedics",      "Bone, joint, muscle, and ligament conditions"),
+            ("Neurology",        "Brain, spinal cord, and nervous system disorders"),
+            ("Ophthalmology",    "Eye and vision care"),
+            ("ENT",              "Ear, nose, and throat conditions"),
+            ("Psychiatry",       "Mental health, behavioural, and emotional disorders"),
+            ("Gynecology",       "Women's reproductive health and related conditions")
+        };
+        foreach (var (name, desc) in allSpecNames)
+        {
+            if (!await context.Specializations.AnyAsync(s => s.Name == name))
             {
-                new() { Name = "General Practice", Description = "Primary care and routine health checkups for all ages" },
-                new() { Name = "Cardiology",       Description = "Heart and cardiovascular system conditions" },
-                new() { Name = "Dermatology",      Description = "Skin, hair, and nail conditions" },
-                new() { Name = "Pediatrics",       Description = "Medical care for infants, children, and adolescents" },
-                new() { Name = "Orthopedics",      Description = "Bone, joint, muscle, and ligament conditions" },
-                new() { Name = "Neurology",        Description = "Brain, spinal cord, and nervous system disorders" },
-                new() { Name = "Ophthalmology",    Description = "Eye and vision care" },
-                new() { Name = "ENT",              Description = "Ear, nose, and throat conditions" },
-                new() { Name = "Psychiatry",       Description = "Mental health, behavioural, and emotional disorders" },
-                new() { Name = "Gynecology",       Description = "Women's reproductive health and related conditions" }
-            };
-            await context.Specializations.AddRangeAsync(specs);
-            await context.SaveChangesAsync();
+                context.Specializations.Add(new Specialization { Name = name, Description = desc });
+            }
         }
+        await context.SaveChangesAsync();
 
-        // ── 4. Doctor Profiles ──────────────────────────────────────────────
-        if (!await context.Doctors.AnyAsync())
+        // ── 4. Doctor Profiles — add any that are missing by UserId ─────────
+        var allSpecs      = await context.Specializations.ToListAsync();
+        var specByName    = allSpecs.ToDictionary(s => s.Name);
+
+        async Task<Doctor> EnsureDoctorAsync(ApplicationUser? user, string license, string bio,
+            DayOfWeek[] days, TimeSpan start, TimeSpan end, string[] specializationNames)
         {
-            var allSpecs = await context.Specializations.ToListAsync();
-            var generalPractice = allSpecs.First(s => s.Name == "General Practice");
-            var cardiology      = allSpecs.First(s => s.Name == "Cardiology");
-            var pediatrics      = allSpecs.First(s => s.Name == "Pediatrics");
-            var dermatology     = allSpecs.First(s => s.Name == "Dermatology");
+            var existing = await context.Doctors.FirstOrDefaultAsync(d => d.UserId == user!.Id);
+            if (existing != null) return existing;
 
-            var doc1 = new Doctor
-            {
-                UserId        = doctor1!.Id,
-                LicenseNumber = "BHR-DOC-2021-001",
-                Bio           = "Senior cardiologist with 12 years of experience in interventional cardiology."
-            };
-            var doc2 = new Doctor
-            {
-                UserId        = doctor2!.Id,
-                LicenseNumber = "BHR-DOC-2019-002",
-                Bio           = "General practitioner specialising in paediatric care and family medicine."
-            };
-            var doc3 = new Doctor
-            {
-                UserId        = doctor3!.Id,
-                LicenseNumber = "BHR-DOC-2020-003",
-                Bio           = "Neurologist with 8 years of experience treating migraines, epilepsy, and stroke rehabilitation."
-            };
-            var doc4 = new Doctor
-            {
-                UserId        = doctor4!.Id,
-                LicenseNumber = "BHR-DOC-2022-004",
-                Bio           = "Ophthalmologist and ENT specialist with expertise in laser eye correction and sinus disorders."
-            };
-            var doc5 = new Doctor
-            {
-                UserId        = doctor5!.Id,
-                LicenseNumber = "BHR-DOC-2018-005",
-                Bio           = "Psychiatrist with over 10 years in cognitive behavioural therapy and anxiety management."
-            };
-            var doc6 = new Doctor
-            {
-                UserId        = doctor6!.Id,
-                LicenseNumber = "BHR-DOC-2023-006",
-                Bio           = "Gynaecologist and dermatologist focused on women's health and skin conditions."
-            };
-
-            await context.Doctors.AddRangeAsync(doc1, doc2, doc3, doc4, doc5, doc6);
+            var doc = new Doctor { UserId = user!.Id, LicenseNumber = license, Bio = bio };
+            context.Doctors.Add(doc);
             await context.SaveChangesAsync();
 
-            var neurology    = allSpecs.First(s => s.Name == "Neurology");
-            var ophthalmology = allSpecs.First(s => s.Name == "Ophthalmology");
-            var ent          = allSpecs.First(s => s.Name == "ENT");
-            var psychiatry   = allSpecs.First(s => s.Name == "Psychiatry");
-            var gynecology   = allSpecs.First(s => s.Name == "Gynecology");
-
-            // Doctor ↔ Specialization links
-            await context.DoctorSpecializations.AddRangeAsync(
-                new DoctorSpecialization { DoctorId = doc1.Id, SpecializationId = generalPractice.Id },
-                new DoctorSpecialization { DoctorId = doc1.Id, SpecializationId = cardiology.Id },
-                new DoctorSpecialization { DoctorId = doc2.Id, SpecializationId = generalPractice.Id },
-                new DoctorSpecialization { DoctorId = doc2.Id, SpecializationId = pediatrics.Id },
-                new DoctorSpecialization { DoctorId = doc3.Id, SpecializationId = neurology.Id },
-                new DoctorSpecialization { DoctorId = doc3.Id, SpecializationId = generalPractice.Id },
-                new DoctorSpecialization { DoctorId = doc4.Id, SpecializationId = ophthalmology.Id },
-                new DoctorSpecialization { DoctorId = doc4.Id, SpecializationId = ent.Id },
-                new DoctorSpecialization { DoctorId = doc5.Id, SpecializationId = psychiatry.Id },
-                new DoctorSpecialization { DoctorId = doc6.Id, SpecializationId = gynecology.Id },
-                new DoctorSpecialization { DoctorId = doc6.Id, SpecializationId = dermatology.Id }
-            );
-
-            // Weekly schedules
-            var weekdays = new[]
+            // Specialization links
+            foreach (var specName in specializationNames)
             {
-                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
-                DayOfWeek.Thursday, DayOfWeek.Friday
-            };
-
-            var schedules = new List<DoctorSchedule>();
-            foreach (var day in weekdays)
-            {
-                // doc1 — Mon to Fri 08:00–17:00
-                schedules.Add(new DoctorSchedule { DoctorId = doc1.Id, DayOfWeek = day, StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(17, 0, 0) });
-                // doc2 — Mon to Fri 09:00–16:00
-                schedules.Add(new DoctorSchedule { DoctorId = doc2.Id, DayOfWeek = day, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(16, 0, 0) });
-                // doc3 — Mon to Fri 08:00–14:00
-                schedules.Add(new DoctorSchedule { DoctorId = doc3.Id, DayOfWeek = day, StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(14, 0, 0) });
-                // doc5 — Mon to Fri 10:00–18:00
-                schedules.Add(new DoctorSchedule { DoctorId = doc5.Id, DayOfWeek = day, StartTime = new TimeSpan(10, 0, 0), EndTime = new TimeSpan(18, 0, 0) });
+                if (specByName.TryGetValue(specName, out var spec) &&
+                    !await context.DoctorSpecializations.AnyAsync(ds => ds.DoctorId == doc.Id && ds.SpecializationId == spec.Id))
+                {
+                    context.DoctorSpecializations.Add(new DoctorSpecialization { DoctorId = doc.Id, SpecializationId = spec.Id });
+                }
             }
 
-            // doc4 — Sun to Thu 08:00–15:00
-            var sunToThu = new[] { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday };
-            foreach (var day in sunToThu)
-                schedules.Add(new DoctorSchedule { DoctorId = doc4.Id, DayOfWeek = day, StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(15, 0, 0) });
+            // Schedules
+            foreach (var day in days)
+                context.DoctorSchedules.Add(new DoctorSchedule { DoctorId = doc.Id, DayOfWeek = day, StartTime = start, EndTime = end });
 
-            // doc6 — Mon, Wed, Fri 09:00–17:00 (part-time)
-            foreach (var day in new[] { DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday })
-                schedules.Add(new DoctorSchedule { DoctorId = doc6.Id, DayOfWeek = day, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0) });
-
-            await context.DoctorSchedules.AddRangeAsync(schedules);
             await context.SaveChangesAsync();
+            return doc;
         }
+
+        var weekdays  = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+        var sunToThu  = new[] { DayOfWeek.Sunday, DayOfWeek.Monday,  DayOfWeek.Tuesday,  DayOfWeek.Wednesday, DayOfWeek.Thursday };
+        var mwf       = new[] { DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday };
+
+        await EnsureDoctorAsync(doctor1, "BHR-DOC-2021-001", "Senior cardiologist with 12 years of experience in interventional cardiology.",
+            weekdays, new TimeSpan(8, 0, 0), new TimeSpan(17, 0, 0), ["General Practice", "Cardiology"]);
+
+        await EnsureDoctorAsync(doctor2, "BHR-DOC-2019-002", "General practitioner specialising in paediatric care and family medicine.",
+            weekdays, new TimeSpan(9, 0, 0), new TimeSpan(16, 0, 0), ["General Practice", "Pediatrics"]);
+
+        await EnsureDoctorAsync(doctor3, "BHR-DOC-2020-003", "Neurologist with 8 years of experience treating migraines, epilepsy, and stroke rehabilitation.",
+            weekdays, new TimeSpan(8, 0, 0), new TimeSpan(14, 0, 0), ["Neurology", "General Practice"]);
+
+        await EnsureDoctorAsync(doctor4, "BHR-DOC-2022-004", "Ophthalmologist and ENT specialist with expertise in laser eye correction and sinus disorders.",
+            sunToThu, new TimeSpan(8, 0, 0), new TimeSpan(15, 0, 0), ["Ophthalmology", "ENT"]);
+
+        await EnsureDoctorAsync(doctor5, "BHR-DOC-2018-005", "Psychiatrist with over 10 years in cognitive behavioural therapy and anxiety management.",
+            weekdays, new TimeSpan(10, 0, 0), new TimeSpan(18, 0, 0), ["Psychiatry"]);
+
+        await EnsureDoctorAsync(doctor6, "BHR-DOC-2023-006", "Gynaecologist and dermatologist focused on women's health and skin conditions.",
+            mwf, new TimeSpan(9, 0, 0), new TimeSpan(17, 0, 0), ["Gynecology", "Dermatology"]);
 
         // ── 5. Patient Profiles ─────────────────────────────────────────────
         if (!await context.Patients.AnyAsync())
