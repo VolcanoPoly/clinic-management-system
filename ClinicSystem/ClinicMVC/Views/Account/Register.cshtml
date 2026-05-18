@@ -4,72 +4,101 @@
     ViewData["AuthPage"] = true;
 }
 
-<div class="auth-wrapper">
-    <div class="card auth-card auth-card-wide border-0">
+<div class="auth-split-wrapper">
 
-        <div class="auth-header">
-            <div class="auth-logo float-anim">
-                <i class="fa-solid fa-user-plus"></i>
-            </div>
-            <h2>Create Account</h2>
-            <p>Register as a patient to book appointments</p>
+    <!-- ── Left panel: branding ───────────────────────────────────────────── -->
+    <div class="auth-split-left">
+        <div class="auth-split-brand">
+            <img src="~/images/logo.svg" alt="MedCenter Logo" class="auth-split-logo float-anim" />
+            <h1 class="auth-split-title">MedCenter</h1>
+            <p class="auth-split-sub">Your health, our priority.</p>
         </div>
 
-        <div class="auth-body">
-            <form asp-action="Register" method="post">
+        <ul class="auth-feature-list">
+            <li><i class="fa-solid fa-user-plus"></i> Free patient registration</li>
+            <li><i class="fa-solid fa-calendar-plus"></i> Book appointments instantly</li>
+            <li><i class="fa-solid fa-stethoscope"></i> 10+ specialist doctors</li>
+            <li><i class="fa-solid fa-clock-rotate-left"></i> Full appointment history</li>
+        </ul>
+
+        <p class="auth-split-copy">&copy; 2026 MedCenter Clinic System</p>
+    </div>
+
+    <!-- ── Right panel: form ─────────────────────────────────────────────── -->
+    <div class="auth-split-right">
+        <div class="auth-form-card" data-aos="fade-left">
+
+            <div class="auth-form-header">
+                <div class="auth-form-icon"><i class="fa-solid fa-user-plus"></i></div>
+                <h2>Create Account</h2>
+                <p>Register as a patient — it only takes a minute</p>
+            </div>
+
+            <form asp-action="Register" method="post" class="auth-form-body">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3 small"></div>
 
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col-6">
-                        <label asp-for="FirstName" class="form-label">First Name</label>
-                        <input asp-for="FirstName" class="form-control" placeholder="Ali" />
-                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        <div class="auth-field">
+                            <label asp-for="FirstName">First Name</label>
+                            <div class="auth-input-wrap">
+                                <i class="fa-solid fa-user auth-input-icon"></i>
+                                <input asp-for="FirstName" class="form-control auth-input" placeholder="Ali" />
+                            </div>
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
                     </div>
                     <div class="col-6">
-                        <label asp-for="LastName" class="form-label">Last Name</label>
-                        <input asp-for="LastName" class="form-control" placeholder="Husain" />
-                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                        <div class="auth-field">
+                            <label asp-for="LastName">Last Name</label>
+                            <div class="auth-input-wrap">
+                                <i class="fa-solid fa-user auth-input-icon"></i>
+                                <input asp-for="LastName" class="form-control auth-input" placeholder="Husain" />
+                            </div>
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label">Email Address</label>
-                    <div class="input-group">
-                        <span class="input-group-text border-end-0"><i class="fa-regular fa-envelope"></i></span>
-                        <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="ali@example.com" autocomplete="email" />
+                <div class="auth-field">
+                    <label asp-for="Email">Email Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-regular fa-envelope auth-input-icon"></i>
+                        <input asp-for="Email" class="form-control auth-input" placeholder="ali@example.com" autocomplete="email" />
                     </div>
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text border-end-0"><i class="fa-solid fa-lock"></i></span>
-                        <input asp-for="Password" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="new-password" />
+                <div class="auth-field">
+                    <label asp-for="Password">Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock auth-input-icon"></i>
+                        <input asp-for="Password" class="form-control auth-input" placeholder="••••••••" autocomplete="new-password" />
                     </div>
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text border-end-0"><i class="fa-solid fa-lock"></i></span>
-                        <input asp-for="ConfirmPassword" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="new-password" />
+                <div class="auth-field">
+                    <label asp-for="ConfirmPassword">Confirm Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock auth-input-icon"></i>
+                        <input asp-for="ConfirmPassword" class="form-control auth-input" placeholder="••••••••" autocomplete="new-password" />
                     </div>
                     <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2">
+                <button type="submit" class="btn btn-auth-submit w-100 mt-2">
                     <i class="fa-solid fa-user-plus me-2"></i> Create Account
                 </button>
+
+                <p class="auth-switch-link">
+                    Already have an account? <a asp-action="Login">Sign in here</a>
+                </p>
             </form>
-        </div>
 
-        <div class="auth-footer-link">
-            Already have an account? <a asp-action="Login">Sign in here</a>
         </div>
-
     </div>
+
 </div>
 
 @section Scripts {

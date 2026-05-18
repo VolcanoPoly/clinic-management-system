@@ -4,55 +4,76 @@
     ViewData["AuthPage"] = true;
 }
 
-<div class="auth-wrapper">
-    <div class="card auth-card border-0">
+<div class="auth-split-wrapper">
 
-        <div class="auth-header">
-            <div class="auth-logo float-anim">
-                <i class="fa-solid fa-user-doctor"></i>
-            </div>
-            <h2>Welcome Back</h2>
-            <p>Sign in to your MedCenter account</p>
+    <!-- ── Left panel: branding ───────────────────────────────────────────── -->
+    <div class="auth-split-left">
+        <div class="auth-split-brand">
+            <img src="~/images/logo.svg" alt="MedCenter Logo" class="auth-split-logo float-anim" />
+            <h1 class="auth-split-title">MedCenter</h1>
+            <p class="auth-split-sub">Your health, our priority.</p>
         </div>
 
-        <div class="auth-body">
-            <form asp-action="Login" method="post">
+        <ul class="auth-feature-list">
+            <li><i class="fa-solid fa-shield-halved"></i> Secure &amp; private health records</li>
+            <li><i class="fa-solid fa-calendar-check"></i> Easy appointment booking</li>
+            <li><i class="fa-solid fa-user-doctor"></i> Trusted specialist doctors</li>
+            <li><i class="fa-solid fa-bell"></i> Real-time status notifications</li>
+        </ul>
+
+        <p class="auth-split-copy">&copy; 2026 MedCenter Clinic System</p>
+    </div>
+
+    <!-- ── Right panel: form ─────────────────────────────────────────────── -->
+    <div class="auth-split-right">
+        <div class="auth-form-card" data-aos="fade-left">
+
+            <div class="auth-form-header">
+                <div class="auth-form-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+                <h2>Sign In</h2>
+                <p>Welcome back — enter your credentials below</p>
+            </div>
+
+            <form asp-action="Login" method="post" class="auth-form-body">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3 small"></div>
 
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label">Email Address</label>
-                    <div class="input-group">
-                        <span class="input-group-text border-end-0"><i class="fa-regular fa-envelope"></i></span>
-                        <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="you@example.com" autocomplete="email" />
+                <div class="auth-field">
+                    <label asp-for="Email">Email Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-regular fa-envelope auth-input-icon"></i>
+                        <input asp-for="Email" class="form-control auth-input" placeholder="you@example.com" autocomplete="email" />
                     </div>
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text border-end-0"><i class="fa-solid fa-lock"></i></span>
-                        <input asp-for="Password" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="current-password" />
+                <div class="auth-field">
+                    <label asp-for="Password">Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock auth-input-icon"></i>
+                        <input asp-for="Password" class="form-control auth-input" placeholder="••••••••" autocomplete="current-password" />
                     </div>
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-4 form-check">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                <div class="d-flex align-items-center mb-4">
+                    <div class="form-check mb-0">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label" style="font-size:.875rem; color:#64748b;">Remember me</label>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2">
+                <button type="submit" class="btn btn-auth-submit w-100">
                     <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In
                 </button>
+
+                <p class="auth-switch-link">
+                    Don't have an account? <a asp-action="Register">Register as a Patient</a>
+                </p>
             </form>
-        </div>
 
-        <div class="auth-footer-link">
-            Don't have an account? <a asp-action="Register">Register as a Patient</a>
         </div>
-
     </div>
+
 </div>
 
 @section Scripts {
