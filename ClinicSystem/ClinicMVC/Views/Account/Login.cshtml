@@ -1,41 +1,58 @@
 @model ClinicMVC.Models.ViewModels.LoginViewModel
 @{
     ViewData["Title"] = "Login";
+    Layout = "_Layout";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-5 mt-5">
-        <div class="card shadow border-0">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">Login</h3>
+<div class="auth-wrapper">
+    <div class="card auth-card border-0">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fa-solid fa-user-doctor"></i>
             </div>
-            <div class="card-body p-4">
-                <form asp-action="Login" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" placeholder="manager@clinic.com" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+            <h2>Welcome Back</h2>
+            <p>Sign in to your MedCenter account</p>
+        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label"></label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+        <div class="auth-body">
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3"></div>
 
-                    <div class="mb-3 form-check">
-                        <input asp-for="RememberMe" class="form-check-input" />
-                        <label asp-for="RememberMe" class="form-check-label"></label>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fa-regular fa-envelope text-muted"></i>
+                        </span>
+                        <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="you@example.com" style="border-left:none" />
                     </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
 
-                    <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
-                </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">Don't have an account? <a asp-action="Register">Register as a Patient</a></p>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fa-solid fa-lock text-muted"></i>
+                        </span>
+                        <input asp-for="Password" class="form-control border-start-0 ps-0" placeholder="••••••••" style="border-left:none" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label text-muted" style="font-size:.875rem">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In
+                </button>
+            </form>
+        </div>
+
+        <div class="auth-footer-link">
+            Don't have an account? <a asp-action="Register">Register as a Patient</a>
         </div>
     </div>
 </div>

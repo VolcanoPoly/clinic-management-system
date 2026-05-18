@@ -2,36 +2,50 @@
     ViewData["Title"] = "Patient Dashboard";
 }
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-5 text-center">
-                <h1 class="display-4 text-primary">Welcome, @User.Identity?.Name!</h1>
-                <p class="lead">This is your personal Patient Dashboard.</p>
-                <hr class="my-4">
-                <div class="row g-4 mt-2">
-                    <div class="col-md-4">
-                        <div class="p-4 bg-light rounded shadow-sm h-100">
-                            <h3>My Appointments</h3>
-                            <p>View and manage your upcoming visits.</p>
-                            <a asp-controller="Appointment" asp-action="MyAppointments" class="btn btn-outline-primary">View All</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="p-4 bg-light rounded shadow-sm h-100">
-                            <h3>Book Appointment</h3>
-                            <p>Find a doctor and schedule a new visit.</p>
-                            <a asp-controller="Appointment" asp-action="Book" class="btn btn-primary">Book Now</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="p-4 bg-light rounded shadow-sm h-100">
-                            <h3>Medical Records</h3>
-                            <p>View your past diagnoses and prescriptions.</p>
-                            <button class="btn btn-outline-primary disabled">View History</button>
-                        </div>
-                    </div>
-                </div>
+<div class="welcome-banner">
+    <h1><i class="fa-solid fa-hand-wave me-2"></i> Welcome, @User.Identity?.Name!</h1>
+    <p>This is your personal Patient Dashboard — manage your health appointments in one place.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <a asp-controller="Appointment" asp-action="MyAppointments" class="stat-card">
+            <div class="stat-icon" style="background:#dbeafe; color:#1a6fc4;">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="stat-title">My Appointments</div>
+            <div class="fw-600" style="font-size:1rem;">View &amp; Manage</div>
+            <div class="stat-desc">See all your upcoming and past visits.</div>
+            <div class="stat-action">
+                View All <i class="fa-solid fa-arrow-right"></i>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a asp-controller="Appointment" asp-action="Book" class="stat-card">
+            <div class="stat-icon" style="background:#d1fae5; color:#16a34a;">
+                <i class="fa-solid fa-calendar-plus"></i>
+            </div>
+            <div class="stat-title">Book Appointment</div>
+            <div class="fw-600" style="font-size:1rem;">New Visit</div>
+            <div class="stat-desc">Find a doctor and schedule a new appointment.</div>
+            <div class="stat-action" style="color:#16a34a;">
+                Book Now <i class="fa-solid fa-arrow-right"></i>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card" style="cursor:default; opacity:.7;">
+            <div class="stat-icon" style="background:#f3f4f6; color:#6b7280;">
+                <i class="fa-solid fa-file-medical"></i>
+            </div>
+            <div class="stat-title">Medical Records</div>
+            <div class="fw-600" style="font-size:1rem;">View History</div>
+            <div class="stat-desc">Access your past diagnoses and prescriptions.</div>
+            <div class="stat-action" style="color:#6b7280;">
+                Coming Soon <i class="fa-solid fa-clock"></i>
             </div>
         </div>
     </div>
