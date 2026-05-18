@@ -14,14 +14,14 @@
                         <div class="p-4 bg-light rounded shadow-sm h-100">
                             <h3>My Appointments</h3>
                             <p>View and manage your upcoming visits.</p>
-                            <button class="btn btn-outline-primary disabled">View All</button>
+                            <a asp-controller="Appointment" asp-action="MyAppointments" class="btn btn-outline-primary">View All</a>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-4 bg-light rounded shadow-sm h-100">
                             <h3>Book Appointment</h3>
                             <p>Find a doctor and schedule a new visit.</p>
-                            <button class="btn btn-primary disabled">Book Now</button>
+                            <a asp-controller="Appointment" asp-action="Book" class="btn btn-primary">Book Now</a>
                         </div>
                     </div>
                     <div class="col-md-4">
