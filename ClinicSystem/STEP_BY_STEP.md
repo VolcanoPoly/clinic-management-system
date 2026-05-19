@@ -334,15 +334,15 @@ git push origin main
 >
 > Apply `[Authorize(Roles = 'Patient,Receptionist')]` to the booking actions."
 
-- [ ] Create all files
-- [ ] Test the full booking flow as a Patient
-- [ ] Test booking as a Receptionist (selecting a patient)
-- [ ] Try to book a slot that already exists — confirm it is blocked
+- [x] Create all files
+- [x] Test the full booking flow as a Patient
+- [x] Test booking as a Receptionist (selecting a patient)
+- [x] Try to book a slot that already exists — confirm it is blocked
 
 ---
 
 ### Step 19 — `ALI`
-**Commit booking feature**
+**Commit booking feature** ✅ COMPLETED
 
 ```bash
 git add .
@@ -387,17 +387,17 @@ git push origin main
 >
 > Use EF Core directly. Notifications sent on every status change."
 
-- [ ] Create all files
-- [ ] Test the full lifecycle as each role:
-  - [ ] Patient books → Receptionist confirms → Receptionist checks in → Doctor starts → Doctor completes
-  - [ ] Try an invalid transition (e.g., Requested → Completed directly) — confirm it is blocked
-  - [ ] Patient cancels a Requested appointment — confirm it works
-  - [ ] Try cancelling a Completed appointment — confirm it is blocked
+- [x] Create all files
+- [x] Test the full lifecycle as each role:
+  - [x] Patient books → Receptionist confirms → Receptionist checks in → Doctor starts → Doctor completes
+  - [x] Try an invalid transition (e.g., Requested → Completed directly) — confirm it is blocked
+  - [x] Patient cancels a Requested appointment — confirm it works
+  - [x] Try cancelling a Completed appointment — confirm it is blocked
 
 ---
 
 ### Step 21 — `ALI`
-**Commit lifecycle management**
+**Commit lifecycle management** ✅ COMPLETED
 
 ```bash
 git add .
