@@ -483,6 +483,106 @@ namespace ClinicMVC.Controllers
         }
 
         // ??????????????????????????????????????????????????????????
+        // Specialization Management Actions
+        // ??????????????????????????????????????????????????????????
+
+        public async Task<IActionResult> Specializations()
+        {
+            var specializations = await _dbContext.Specializations
+                .Include(s => s.Doctors)
+                .ToListAsync();
+
+            var viewModels = specializations.Select(s => new SpecializationViewModel
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                DoctorCount = s.Doctors.Count
+            }).ToList();
+
+            return View(viewModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SpecializationsCreate(SpecializationViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction(nameof(Specializations));
+
+            var duplicate = await _dbContext.Specializations
+                .AnyAsync(s => s.Name.ToLower() == model.Name.ToLower());
+
+            if (duplicate)
+            {
+                TempData["Error"] = $"A specialization named \"{model.Name}\" already exists.";
+                return RedirectToAction(nameof(Specializations));
+            }
+
+            _dbContext.Specializations.Add(new ClinicAPI.Models.Specialization
+            {
+                Name = model.Name.Trim(),
+                Description = model.Description?.Trim() ?? string.Empty
+            });
+            await _dbContext.SaveChangesAsync();
+
+            TempData["Success"] = $"Specialization \"{model.Name}\" created.";
+            return RedirectToAction(nameof(Specializations));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SpecializationsEdit(SpecializationViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction(nameof(Specializations));
+
+            var spec = await _dbContext.Specializations.FindAsync(model.Id);
+            if (spec == null)
+                return NotFound();
+
+            var duplicate = await _dbContext.Specializations
+                .AnyAsync(s => s.Name.ToLower() == model.Name.ToLower() && s.Id != model.Id);
+
+            if (duplicate)
+            {
+                TempData["Error"] = $"A specialization named \"{model.Name}\" already exists.";
+                return RedirectToAction(nameof(Specializations));
+            }
+
+            spec.Name = model.Name.Trim();
+            spec.Description = model.Description?.Trim() ?? string.Empty;
+            await _dbContext.SaveChangesAsync();
+
+            TempData["Success"] = $"Specialization \"{spec.Name}\" updated.";
+            return RedirectToAction(nameof(Specializations));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SpecializationsDelete(int id)
+        {
+            var spec = await _dbContext.Specializations
+                .Include(s => s.Doctors)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (spec == null)
+                return NotFound();
+
+            if (spec.Doctors.Any())
+            {
+                TempData["Error"] = $"Cannot delete \"{spec.Name}\" — it is assigned to {spec.Doctors.Count} doctor(s).";
+                return RedirectToAction(nameof(Specializations));
+            }
+
+            _dbContext.Specializations.Remove(spec);
+            await _dbContext.SaveChangesAsync();
+
+            TempData["Success"] = $"Specialization \"{spec.Name}\" deleted.";
+            return RedirectToAction(nameof(Specializations));
+        }
+
+        // ??????????????????????????????????????????????????????????
         // Helper Methods
         // ??????????????????????????????????????????????????????????
 
