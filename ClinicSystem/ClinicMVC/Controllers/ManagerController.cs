@@ -339,8 +339,8 @@ namespace ClinicMVC.Controllers
                     DayName = GetDayName(s.DayOfWeek),
                     StartTime = s.StartTime,
                     EndTime = s.EndTime,
-                    StartTimeString = s.StartTime.ToString("HH:mm"),
-                    EndTimeString = s.EndTime.ToString("HH:mm")
+                    StartTimeString = s.StartTime.ToString(@"hh\:mm"),
+                    EndTimeString = s.EndTime.ToString(@"hh\:mm")
                 }).ToList()
             };
 
