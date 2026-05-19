@@ -200,7 +200,11 @@
                         {
                             <a asp-action="DoctorAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
                         }
-                        else if (isReceptionist || User.IsInRole("Manager"))
+                        else if (isReceptionist)
+                        {
+                            <a asp-action="TodaysAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
+                        else if (User.IsInRole("ClinicManager"))
                         {
                             <a asp-action="AllAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
                         }
@@ -239,7 +243,11 @@
                         {
                             <a asp-action="DoctorAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
                         }
-                        else if (isReceptionist || User.IsInRole("Manager"))
+                        else if (isReceptionist)
+                        {
+                            <a asp-action="TodaysAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
+                        else if (User.IsInRole("ClinicManager"))
                         {
                             <a asp-action="AllAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
                         }
