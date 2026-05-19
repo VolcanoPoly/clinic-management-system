@@ -25,5 +25,12 @@ namespace ClinicMVC.Controllers
         {
             return View();
         }
+
+        [Route("Home/NotFound")]
+        public IActionResult NotFound()
+        {
+            Response.StatusCode = 404;
+            return View();
+        }
     }
 }
