@@ -141,9 +141,9 @@ public static class DataSeeder
         // ── 6. Sample Appointments ──────────────────────────────────────────
         if (!await context.Appointments.AnyAsync())
         {
-            var doc1        = await context.Doctors.FirstAsync();
-            var pat1        = await context.Patients.FirstAsync();
-            var pat2        = await context.Patients.Skip(1).FirstAsync();
+            var doc1        = await context.Doctors.FirstAsync(d => d.UserId == doctor1!.Id);
+            var pat1        = await context.Patients.FirstAsync(p => p.UserId == patient1!.Id);
+            var pat2        = await context.Patients.FirstAsync(p => p.UserId == patient2!.Id);
             var generalSpec = await context.Specializations.FirstAsync(s => s.Name == "General Practice");
             var cardioSpec  = await context.Specializations.FirstAsync(s => s.Name == "Cardiology");
 
