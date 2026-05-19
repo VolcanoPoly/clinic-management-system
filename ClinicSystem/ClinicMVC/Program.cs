@@ -4,7 +4,20 @@ using ClinicAPI.Data;
 using ClinicAPI.Models;
 using ClinicMVC.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+// Set content root to project directory to ensure wwwroot is found
+var currentDir = Directory.GetCurrentDirectory();
+if (currentDir.Contains("bin"))
+{
+    // Running from bin folder, go up to project root
+    currentDir = Path.GetFullPath(Path.Combine(currentDir, "..", "..", ".."));
+}
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = currentDir
+});
+
 // Explicitly bind to the ports to avoid conflicts with port 5000
 builder.WebHost.UseUrls("http://localhost:5298", "https://localhost:7268");
 

@@ -392,6 +392,7 @@ namespace ClinicMVC.Controllers
                 .Include(a => a.Doctor).ThenInclude(d => d!.User)
                 .Include(a => a.Specialization)
                 .Include(a => a.StatusHistory)
+                .Include(a => a.VisitRecord)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null) return NotFound();
@@ -438,7 +439,9 @@ namespace ClinicMVC.Controllers
                 Notes               = appointment.Notes,
                 CancellationReason  = appointment.CancellationReason,
                 StatusHistory       = historyVms,
-                AllowedTransitions  = GetAllowedTransitions(appointment.Status, User)
+                AllowedTransitions  = GetAllowedTransitions(appointment.Status, User),
+                HasVisitRecord      = appointment.VisitRecord != null,
+                VisitRecordId       = appointment.VisitRecord?.Id
             };
 
             return View(vm);
@@ -490,7 +493,7 @@ namespace ClinicMVC.Controllers
 
             // If completed, redirect doctor to create visit record
             if (newStatus == AppointmentStatus.Completed && User.IsInRole("Doctor"))
-                return RedirectToAction("Create", "VisitRecord", new { appointmentId = appointment.Id });
+                return RedirectToAction("CreateVisitRecord", "Doctor", new { appointmentId = appointment.Id });
 
             return RedirectToAction(nameof(Details), new { id });
         }
@@ -584,7 +587,11 @@ namespace ClinicMVC.Controllers
             }
             else if (user.IsInRole("Doctor"))
             {
-                if (current == AppointmentStatus.CheckedIn)
+                if (current == AppointmentStatus.Requested)
+                    transitions.Add(AppointmentStatus.InProgress);
+                else if (current == AppointmentStatus.Confirmed)
+                    transitions.Add(AppointmentStatus.InProgress);
+                else if (current == AppointmentStatus.CheckedIn)
                     transitions.Add(AppointmentStatus.InProgress);
                 else if (current == AppointmentStatus.InProgress)
                     transitions.AddRange(new[] { AppointmentStatus.Completed, AppointmentStatus.Missed });

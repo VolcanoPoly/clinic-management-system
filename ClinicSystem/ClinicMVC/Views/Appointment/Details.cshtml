@@ -215,7 +215,26 @@
             {
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <p class="alert alert-info small mb-0">No actions available for this appointment status.</p>
+                        @if (isDoctor && Model.Status == ClinicAPI.Models.AppointmentStatus.Completed && !Model.HasVisitRecord)
+                        {
+                            <p class="alert alert-warning small mb-3">This appointment is completed but has no visit record yet.</p>
+                            <a asp-action="CreateVisitRecord" asp-controller="Doctor" asp-route-appointmentId="@Model.Id"
+                               class="btn btn-success btn-sm w-100 mb-2">
+                                + Create Visit Record
+                            </a>
+                        }
+                        else if (isDoctor && Model.Status == ClinicAPI.Models.AppointmentStatus.Completed && Model.HasVisitRecord)
+                        {
+                            <p class="alert alert-success small mb-3">Visit record created.</p>
+                            <a asp-action="VisitRecordDetail" asp-controller="Doctor" asp-route-id="@Model.VisitRecordId"
+                               class="btn btn-primary btn-sm w-100 mb-2">
+                                View Visit Record
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="alert alert-info small mb-0">No actions available for this appointment status.</p>
+                        }
                         @if (isDoctor)
                         {
                             <a asp-action="DoctorAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>

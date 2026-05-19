@@ -1,0 +1,103 @@
+@model ClinicMVC.Models.ViewModels.PrescriptionFormViewModel
+@{
+    ViewData["Title"] = "Create Prescription";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Create Prescription</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreatePrescription" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="VisitRecordId" />
+
+
+                        <h6 class="mb-3">Medication Items</h6>
+                        <div id="prescriptionItems">
+                            @for (int i = 0; i < Model.Items.Count; i++)
+                            {
+                                <div class="card mb-3 prescription-item">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <label class="form-label small">Medication Name</label>
+                                                <input asp-for="Items[i].MedicationName" class="form-control" />
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label small">Dosage</label>
+                                                <input asp-for="Items[i].Dosage" class="form-control" placeholder="e.g., 500mg" />
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label small">Frequency</label>
+                                                <input asp-for="Items[i].Frequency" class="form-control" placeholder="e.g., 3x daily" />
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label small">Duration</label>
+                                                <input asp-for="Items[i].Duration" class="form-control" placeholder="e.g., 7 days" />
+                                            </div>
+                                            <div class="col-md-9 mb-2">
+                                                <label class="form-label small">Instructions</label>
+                                                <input asp-for="Items[i].Instructions" class="form-control" placeholder="e.g., Take with food" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <button type="button" id="addItemBtn" class="btn btn-outline-secondary btn-sm mb-3">
+                            + Add Medication
+                        </button>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">Create Prescription</button>
+                            <a asp-action="VisitRecordDetail" asp-controller="Doctor" asp-route-id="@Model.VisitRecordId" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('addItemBtn').addEventListener('click', function() {
+            const container = document.getElementById('prescriptionItems');
+            const itemCount = container.querySelectorAll('.prescription-item').length;
+            const newItem = document.createElement('div');
+            newItem.className = 'card mb-3 prescription-item';
+            newItem.innerHTML = `
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label small">Medication Name</label>
+                            <input name="Items[${itemCount}].MedicationName" class="form-control" />
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label small">Dosage</label>
+                            <input name="Items[${itemCount}].Dosage" class="form-control" placeholder="e.g., 500mg" />
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label small">Frequency</label>
+                            <input name="Items[${itemCount}].Frequency" class="form-control" placeholder="e.g., 3x daily" />
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label small">Duration</label>
+                            <input name="Items[${itemCount}].Duration" class="form-control" placeholder="e.g., 7 days" />
+                        </div>
+                        <div class="col-md-9 mb-2">
+                            <label class="form-label small">Instructions</label>
+                            <input name="Items[${itemCount}].Instructions" class="form-control" placeholder="e.g., Take with food" />
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newItem);
+        });
+    </script>
+}

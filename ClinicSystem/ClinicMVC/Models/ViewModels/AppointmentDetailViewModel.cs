@@ -18,6 +18,10 @@ namespace ClinicMVC.Models.ViewModels
 
         // Actions available to the current user for this appointment
         public List<AppointmentStatus> AllowedTransitions { get; set; } = new();
+
+        // Visit record info
+        public bool HasVisitRecord { get; set; }
+        public int? VisitRecordId { get; set; }
     }
 
     public class StatusHistoryItemViewModel

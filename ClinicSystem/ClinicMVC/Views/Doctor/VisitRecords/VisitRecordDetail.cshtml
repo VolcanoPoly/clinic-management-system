@@ -1,0 +1,106 @@
+@model ClinicMVC.Models.ViewModels.VisitRecordViewModel
+@{
+    ViewData["Title"] = "Visit Record Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Visit Record Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Visit Record #@Model.Id</h5>
+                    <small class="text-muted">@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="text-muted small">PATIENT</p>
+                            <p class="fw-semibold">@Model.PatientName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted small">DOCTOR</p>
+                            <p class="fw-semibold">@Model.DoctorName</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-muted small">APPOINTMENT DATE</p>
+                        <p class="fw-semibold">@Model.AppointmentDateTime.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-muted small">DIAGNOSIS</p>
+                        <p class="fw-semibold text-primary">@Model.Diagnosis</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-muted small">TREATMENT</p>
+                        <p>@Model.Treatment</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-muted small">DOCTOR NOTES</p>
+                        <p>@Model.DoctorNotes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prescription Card -->
+            @if (Model.HasPrescription)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Prescription #@Model.PrescriptionId</h5>
+                        <div>
+                            <a asp-action="ViewPrescription" asp-controller="Doctor" asp-route-id="@Model.PrescriptionId" class="btn btn-light btn-sm">
+                                View Prescription
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">A prescription has been issued for this visit.</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <p class="text-muted mb-3">No prescription has been issued for this visit.</p>
+                        <a asp-action="CreatePrescription" asp-controller="Doctor" asp-route-visitRecordId="@Model.Id" class="btn btn-success">
+                            + Add Prescription
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Action Panel -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-action="MyAppointments" asp-controller="Doctor" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                        ← My Appointments
+                    </a>
+                    
+                    @if (User.IsInRole("Patient"))
+                    {
+                        <a asp-action="MyHistory" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                            My Visit History
+                        </a>
+                    }
+                    else if (User.IsInRole("Doctor"))
+                    {
+                        <a asp-action="DoctorAppointments" asp-controller="Appointment" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                            My Appointments
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
