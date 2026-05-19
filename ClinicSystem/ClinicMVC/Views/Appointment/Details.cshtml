@@ -196,9 +196,18 @@
                             }
                         }
 
-                        <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">
-                            ← Back to My Appointments
-                        </a>
+                        @if (isDoctor)
+                        {
+                            <a asp-action="DoctorAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
+                        else if (isReceptionist || User.IsInRole("Manager"))
+                        {
+                            <a asp-action="AllAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
+                        else
+                        {
+                            <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
                     </div>
                 </div>
             }
@@ -207,9 +216,18 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <p class="alert alert-info small mb-0">No actions available for this appointment status.</p>
-                        <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">
-                            ← Back
-                        </a>
+                        @if (isDoctor)
+                        {
+                            <a asp-action="DoctorAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
+                        else if (isReceptionist || User.IsInRole("Manager"))
+                        {
+                            <a asp-action="AllAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
+                        else
+                        {
+                            <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-sm w-100 mt-3">← Back</a>
+                        }
                     </div>
                 </div>
             }
