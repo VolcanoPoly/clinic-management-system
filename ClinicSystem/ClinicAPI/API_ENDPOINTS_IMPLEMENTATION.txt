@@ -1,0 +1,140 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 9 — Web API Endpoints
+ * Description : Web API implementation for Clinic Management System
+ *
+ * IMPLEMENTATION SUMMARY:
+ * =====================
+ * 
+ * Controllers Implemented:
+ * 1. AuthController.cs (POST /api/auth/login)
+ *    - Accepts email + password
+ *    - Validates against Identity
+ *    - Returns signed JWT token with claims (userId, email, role)
+ * 
+ * 2. AppointmentsController.cs (API)
+ *    - GET /api/appointments/lookup?cpr={cpr}&ref={ref} — PUBLIC (no JWT)
+ *    - GET /api/appointments — JWT required (Receptionist or ClinicManager)
+ *    - GET /api/appointments/{id} — JWT required
+ * 
+ * 3. DoctorsController.cs (API)
+ *    - GET /api/doctors — JWT required
+ *    - GET /api/doctors/{id}/availability?date={date} — JWT required
+ * 
+ * 4. ReportsController.cs (API)
+ *    - GET /api/reports/appointment-stats?from={date}&to={date} — JWT required, ClinicManager only
+ *    - GET /api/reports/doctor-utilization?from={date}&to={date} — JWT required, ClinicManager only
+ *    - GET /api/reports/cancellation-rates?from={date}&to={date} — JWT required, ClinicManager only
+ * 
+ * All endpoints return proper HTTP status codes (200, 400, 401, 403, 404)
+ * All data returned as JSON using response DTOs
+ * Swagger/OpenAPI configured at /swagger
+ * JWT configuration reads from appsettings.json
+ * 
+ * API PORT: https://localhost:7053
+ * 
+ * TEST CREDENTIALS (Development):
+ * ===============================
+ * ClinicManager:
+ *   Email: manager@medcenter.com
+ *   Password: Manager@123
+ * 
+ * Receptionist:
+ *   Email: receptionist@medcenter.com
+ *   Password: Recept@123
+ * 
+ * Patient (for lookup test):
+ *   Email: patient1@medcenter.com
+ *   CPR: 860101001
+ *   Reference: PAT-0001
+ * 
+ * TESTING STEPS:
+ * ==============
+ * 
+ * 1. Start the ClinicAPI project (F5)
+ *    - Expected: Application starts on https://localhost:7053
+ *    - Check: Database is migrated and seeded
+ * 
+ * 2. Open Swagger UI:
+ *    - Navigate to: https://localhost:7053/swagger
+ *    - All endpoints should be visible
+ * 
+ * 3. Test Authentication:
+ *    - Endpoint: POST /api/auth/login
+ *    - Body:
+ *      {
+ *        "email": "manager@medcenter.com",
+ *        "password": "Manager@123"
+ *      }
+ *    - Expected: 200 OK with JWT token
+ * 
+ * 4. Authorize Swagger:
+ *    - Click "Authorize" button
+ *    - Paste token in format: Bearer {your_token}
+ *    - Click "Authorize"
+ * 
+ * 5. Test Public Appointment Lookup:
+ *    - Endpoint: GET /api/appointments/lookup?cpr=860101001&ref=PAT-0001
+ *    - Expected: 200 OK with patient's appointments and visit summaries
+ *    - Note: No token required
+ * 
+ * 6. Test Authenticated Appointments List:
+ *    - Endpoint: GET /api/appointments
+ *    - Expected: 200 OK with list of all appointments (after authorizing with token)
+ *    - Optional filters: ?date=2024-12-20&status=Confirmed&doctorId=1
+ * 
+ * 7. Test Appointment Detail:
+ *    - Endpoint: GET /api/appointments/1
+ *    - Expected: 200 OK with appointment details and status history
+ * 
+ * 8. Test Doctors List:
+ *    - Endpoint: GET /api/doctors
+ *    - Expected: 200 OK with list of doctors and specializations
+ * 
+ * 9. Test Doctor Availability:
+ *    - Endpoint: GET /api/doctors/1/availability?date=2024-12-20
+ *    - Expected: 200 OK with available 30-minute time slots
+ * 
+ * 10. Test Reports (ClinicManager only):
+ *     - Appointment Stats:
+ *       GET /api/reports/appointment-stats?from=2024-01-01&to=2024-12-31
+ *       Expected: 200 OK with appointment statistics
+ * 
+ *     - Doctor Utilization:
+ *       GET /api/reports/doctor-utilization?from=2024-01-01&to=2024-12-31
+ *       Expected: 200 OK with doctor metrics
+ * 
+ *     - Cancellation Rates:
+ *       GET /api/reports/cancellation-rates?from=2024-01-01&to=2024-12-31
+ *       Expected: 200 OK with cancellation statistics
+ * 
+ * 11. Test Authorization (without token):
+ *     - Endpoint: GET /api/reports/appointment-stats?from=2024-01-01&to=2024-12-31
+ *     - Expected: 401 Unauthorized (without Bearer token)
+ * 
+ * 12. Test Role-Based Access:
+ *     - Login as Receptionist (receptionist@medcenter.com / Recept@123)
+ *     - Try GET /api/reports/appointment-stats
+ *     - Expected: 403 Forbidden (Receptionist role cannot access reports)
+ * 
+ * DTO CLASSES CREATED:
+ * ====================
+ * - LoginRequestDto.cs: Login request payload
+ * - LoginResponseDto.cs: Login response with JWT token
+ * - UserInfoDto.cs: User information in responses
+ * - AppointmentLookupDto.cs: Public appointment lookup
+ * - VisitSummaryDto.cs: Visit record summary
+ * - PatientLookupResponseDto.cs: Patient lookup response
+ * - AppointmentDto.cs: Appointment data
+ * - AppointmentStatusHistoryDto.cs: Status history
+ * - AppointmentDetailDto.cs: Full appointment detail
+ * - DoctorDto.cs: Doctor information
+ * - TimeSlotDto.cs: Available time slots
+ * - DoctorAvailabilityDto.cs: Doctor availability
+ * - AppointmentStatsDto.cs: Appointment statistics
+ * - DoctorUtilizationDto.cs: Doctor metrics
+ * - DoctorUtilizationReportDto.cs: Doctor utilization report
+ * - CancellationRateDataDto.cs: Daily cancellation data
+ * - CancellationRatesReportDto.cs: Cancellation rates report
+ */
