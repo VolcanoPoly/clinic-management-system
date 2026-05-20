@@ -24,10 +24,10 @@ namespace ClinicReporting.Controllers
         }
 
         [Route("Home/NotFound")]
-        public IActionResult NotFound()
+        public override NotFoundResult NotFound()
         {
             Response.StatusCode = 404;
-            return View();
+            return base.NotFound();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

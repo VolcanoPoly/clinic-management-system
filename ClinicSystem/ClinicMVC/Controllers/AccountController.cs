@@ -101,7 +101,7 @@ namespace ClinicMVC.Controllers
         {
             _logger.LogInformation("Login POST received for {Email}. ModelState.IsValid={IsValid}", model?.Email, ModelState.IsValid);
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && model != null)
             {
                 try
                 {

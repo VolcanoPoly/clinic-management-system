@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
+using ClinicMVC.Services;
 
+var currentDir = Directory.GetCurrentDirectory();
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     Args = args,
