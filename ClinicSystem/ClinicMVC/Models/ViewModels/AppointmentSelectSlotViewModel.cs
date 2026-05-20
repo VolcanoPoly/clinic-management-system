@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : View model for the third booking step, exposing available 30-minute time slots for the selected doctor and date.
+ */
 using System.ComponentModel.DataAnnotations;
 
 namespace ClinicMVC.Models.ViewModels

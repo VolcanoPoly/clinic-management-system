@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : Lightweight projection used to display appointments in list/table views across all role dashboards.
+ */
 using ClinicAPI.Models;
 
 namespace ClinicMVC.Models.ViewModels

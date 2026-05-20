@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : View model for the second booking step, listing doctors that belong to the chosen specialization along with their available slot count.
+ */
 using System.ComponentModel.DataAnnotations;
 
 namespace ClinicMVC.Models.ViewModels

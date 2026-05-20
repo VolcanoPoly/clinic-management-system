@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 7 - Visit Records & Prescriptions
+ * Description : Shared form view model for creating or editing a visit record entry.
+ */
 using System.ComponentModel.DataAnnotations;
 
 namespace ClinicMVC.Models.ViewModels

@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 7 - Visit Records & Prescriptions
+ * Description : Form view model for creating a new visit record tied to a completed appointment.
+ */
 using System.ComponentModel.DataAnnotations;
 
 namespace ClinicMVC.Models.ViewModels

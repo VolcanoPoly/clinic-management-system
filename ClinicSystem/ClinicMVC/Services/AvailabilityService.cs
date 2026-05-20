@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : Calculates available 30-minute time slots for a doctor on a given date, accounting for their weekly schedule, leave periods, and existing non-cancelled appointments.
+ */
 using ClinicAPI.Data;
 using ClinicAPI.Models;
 using Microsoft.EntityFrameworkCore;

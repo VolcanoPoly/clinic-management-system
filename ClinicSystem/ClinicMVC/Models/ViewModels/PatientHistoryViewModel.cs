@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 7 - Visit Records & Prescriptions
+ * Description : Aggregates a patient full medical history, combining visit records and prescriptions for display.
+ */
 namespace ClinicMVC.Models.ViewModels
 {
     public class PatientHistoryViewModel

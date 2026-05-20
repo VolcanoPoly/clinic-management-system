@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 7 - Visit Records & Prescriptions
+ * Description : Doctor-facing features: recording visit notes, creating and printing prescriptions, and browsing patient medical history.
+ */
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

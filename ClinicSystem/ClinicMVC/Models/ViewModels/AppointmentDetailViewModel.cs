@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : Full appointment detail view model including status history timeline and the list of allowed next-state transitions for the current user role.
+ */
 using ClinicAPI.Models;
 
 namespace ClinicMVC.Models.ViewModels

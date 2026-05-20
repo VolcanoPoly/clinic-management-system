@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : Carries the final booking summary (doctor, date/time, specialization) shown to the patient before they confirm.
+ */
 namespace ClinicMVC.Models.ViewModels
 {
     public class AppointmentConfirmViewModel

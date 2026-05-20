@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 7 - Visit Records & Prescriptions
+ * Description : Detailed view model for a single visit record, including diagnosis, treatment notes, and linked prescriptions.
+ */
 using ClinicAPI.Models;
 
 namespace ClinicMVC.Models.ViewModels

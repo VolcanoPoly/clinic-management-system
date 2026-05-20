@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 7 - Visit Records & Prescriptions
+ * Description : Read-only projection of a prescription used in detail and print views.
+ */
 using System.ComponentModel.DataAnnotations;
 
 namespace ClinicMVC.Models.ViewModels

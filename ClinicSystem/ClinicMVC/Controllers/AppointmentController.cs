@@ -1,3 +1,9 @@
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 6 - Appointment Lifecycle Management
+ * Description : Full appointment booking wizard (4 steps) and lifecycle management. Enforces role-based status transitions: Requested > Confirmed > CheckedIn > InProgress > Completed/Cancelled/Missed.
+ */
 using ClinicAPI.Data;
 using ClinicAPI.Models;
 using ClinicMVC.Models.ViewModels;
