@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
-using Microsoft.AspNetCore.Http;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = currentDir
+});
+
 // Explicitly bind to the ports to avoid conflicts with port 5000
 builder.WebHost.UseUrls("http://localhost:5298", "https://localhost:7268");
 
@@ -50,6 +54,10 @@ builder.Services.AddHttpClient("ClinicApiClient", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+// ── Application Services ────────────────────────────────────────────────────
+builder.Services.AddScoped<AvailabilityService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 // ── MVC with Views ─────────────────────────────────────────────────────────-
 builder.Services.AddControllersWithViews();
 
@@ -61,6 +69,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/NotFound");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

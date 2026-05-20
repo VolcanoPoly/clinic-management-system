@@ -1,0 +1,34 @@
+@*
+    Author      : Ali Alsaffar
+    Student ID  : 202301152
+    Stage       : Stage 7 - Visit Records & Prescriptions
+    Description : Partial view rendering a single medication row inside the prescription creation form.
+*@
+@model ClinicMVC.Models.ViewModels.PrescriptionItemViewModel
+
+<div class="card mb-3 prescription-item">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="form-label small">Medication Name *</label>
+                <input asp-for="MedicationName" class="form-control" required />
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label small">Dosage *</label>
+                <input asp-for="Dosage" class="form-control" placeholder="e.g., 500mg" required />
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label small">Frequency *</label>
+                <input asp-for="Frequency" class="form-control" placeholder="e.g., 3x daily" required />
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label small">Duration *</label>
+                <input asp-for="Duration" class="form-control" placeholder="e.g., 7 days" required />
+            </div>
+            <div class="col-md-9 mb-2">
+                <label class="form-label small">Instructions</label>
+                <input asp-for="Instructions" class="form-control" placeholder="e.g., Take with food" />
+            </div>
+        </div>
+    </div>
+</div>

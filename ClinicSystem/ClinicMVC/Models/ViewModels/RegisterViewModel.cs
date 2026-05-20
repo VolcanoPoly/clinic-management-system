@@ -1,4 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 3 - Authentication & Identity
+ * Description : View model for new patient registration, capturing name, email, and password with confirmation validation.
+ */
+using System.ComponentModel.DataAnnotations;
 
 namespace ClinicMVC.Models.ViewModels
 {

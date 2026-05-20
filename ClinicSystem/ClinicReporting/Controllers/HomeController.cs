@@ -23,6 +23,13 @@ namespace ClinicReporting.Controllers
             return View();
         }
 
+        [Route("Home/NotFound")]
+        public IActionResult NotFound()
+        {
+            Response.StatusCode = 404;
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

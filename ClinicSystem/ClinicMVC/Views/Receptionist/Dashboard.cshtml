@@ -2,43 +2,46 @@
     ViewData["Title"] = "Receptionist Dashboard";
 }
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm bg-info text-white">
-            <div class="card-body p-5">
-                <h1 class="display-4">Receptionist Desk</h1>
-                <p class="lead">Efficiently manage patient flow and bookings.</p>
-            </div>
-        </div>
-    </div>
+<div class="welcome-banner recept-banner" data-aos="fade-down">
+    <div class="role-badge"><i class="fa-solid fa-headset"></i> Receptionist Desk</div>
+    <h1><i class="fa-solid fa-desktop me-2"></i> Welcome, @User.Identity?.Name!</h1>
+    <p>Efficiently manage patient flow, bookings, and check-ins.</p>
 </div>
 
-<div class="row mt-4 g-4 text-center">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <i class="bi bi-calendar-plus display-4 text-info"></i>
-                <h3 class="mt-2">New Booking</h3>
-                <button class="btn btn-info text-white disabled">Open Form</button>
+<div class="row g-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+        <a asp-controller="Appointment" asp-action="Book" class="stat-card">
+            <div class="stat-icon" style="background:#e0f2fe; color:#0369a1;">
+                <i class="fa-solid fa-calendar-plus"></i>
             </div>
-        </div>
+            <div class="stat-title">New Booking</div>
+            <div class="stat-value">Book for Patient</div>
+            <div class="stat-desc">Create a new appointment on behalf of a patient.</div>
+            <div class="stat-action" style="color:#0369a1;">Open Form <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <i class="bi bi-person-check display-4 text-info"></i>
-                <h3 class="mt-2">Check-In</h3>
-                <button class="btn btn-info text-white disabled">Waiting Room</button>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
+        <a asp-controller="Appointment" asp-action="TodaysAppointments" class="stat-card">
+            <div class="stat-icon" style="background:#dbeafe; color:#1a6fc4;">
+                <i class="fa-solid fa-person-walking-arrow-right"></i>
             </div>
-        </div>
+            <div class="stat-title">Today's Appointments</div>
+            <div class="stat-value">Check-In Patients</div>
+            <div class="stat-desc">View today's schedule and manage patient arrivals.</div>
+            <div class="stat-action">Waiting Room <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <i class="bi bi-search display-4 text-info"></i>
-                <h3 class="mt-2">Patient Search</h3>
-                <button class="btn btn-info text-white disabled">Search</button>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="stat-card" style="cursor:default; opacity:.65;">
+            <div class="stat-icon" style="background:#f3f4f6; color:#9ca3af;">
+                <i class="fa-solid fa-magnifying-glass"></i>
             </div>
+            <div class="stat-title">Patient Search</div>
+            <div class="stat-value">Find a Patient</div>
+            <div class="stat-desc">Search patient records and appointment history.</div>
+            <div class="stat-action" style="color:#9ca3af;">Coming Soon <i class="fa-solid fa-clock"></i></div>
         </div>
     </div>
 </div>

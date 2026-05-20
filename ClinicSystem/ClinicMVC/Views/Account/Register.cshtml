@@ -1,57 +1,110 @@
+@*
+    Author      : Ali Alsaffar
+    Student ID  : 202301152
+    Stage       : Stage 3 - Authentication & Identity
+    Description : Patient self-registration page with name, email, and password fields matching the login page design.
+*@
 @model ClinicMVC.Models.ViewModels.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
+    ViewData["AuthPage"] = true;
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6 mt-5">
-        <div class="card shadow border-0">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">Create a New Account</h3>
+<div class="auth-split-wrapper">
+
+    <!-- ── Left panel: branding ───────────────────────────────────────────── -->
+    <div class="auth-split-left">
+        <div class="auth-split-brand">
+            <img src="~/images/logo.svg" alt="MedCenter Logo" class="auth-split-logo float-anim" />
+            <h1 class="auth-split-title">MedCenter</h1>
+            <p class="auth-split-sub">Your health, our priority.</p>
+        </div>
+
+        <ul class="auth-feature-list">
+            <li><i class="fa-solid fa-user-plus"></i> Free patient registration</li>
+            <li><i class="fa-solid fa-calendar-plus"></i> Book appointments instantly</li>
+            <li><i class="fa-solid fa-stethoscope"></i> 10+ specialist doctors</li>
+            <li><i class="fa-solid fa-clock-rotate-left"></i> Full appointment history</li>
+        </ul>
+
+        <p class="auth-split-copy">&copy; 2026 MedCenter Clinic System</p>
+    </div>
+
+    <!-- ── Right panel: form ─────────────────────────────────────────────── -->
+    <div class="auth-split-right">
+        <div class="auth-form-card" data-aos="fade-left">
+
+            <div class="auth-form-header">
+                <img src="~/images/logo.svg" alt="MedCenter" style="width:56px;height:56px;border-radius:14px;margin-bottom:.75rem;box-shadow:0 4px 14px rgba(14,165,233,.35);" />
+                <h2>Create Account</h2>
+                <p>Register as a patient — it only takes a minute</p>
             </div>
-            <div class="card-body p-4">
-                <form asp-action="Register" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label asp-for="FirstName" class="form-label"></label>
-                            <input asp-for="FirstName" class="form-control" placeholder="Ali" />
-                            <span asp-validation-for="FirstName" class="text-danger"></span>
+
+            <form asp-action="Register" method="post" class="auth-form-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3 small"></div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="auth-field">
+                            <label asp-for="FirstName">First Name</label>
+                            <div class="auth-input-wrap">
+                                <i class="fa-solid fa-user auth-input-icon"></i>
+                                <input asp-for="FirstName" class="form-control auth-input" placeholder="Ali" />
+                            </div>
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
                         </div>
-                        <div class="col-md-6">
-                            <label asp-for="LastName" class="form-label"></label>
-                            <input asp-for="LastName" class="form-control" placeholder="Husain" />
-                            <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="col-6">
+                        <div class="auth-field">
+                            <label asp-for="LastName">Last Name</label>
+                            <div class="auth-input-wrap">
+                                <i class="fa-solid fa-user auth-input-icon"></i>
+                                <input asp-for="LastName" class="form-control auth-input" placeholder="Husain" />
+                            </div>
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" placeholder="ali@example.com" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                <div class="auth-field">
+                    <label asp-for="Email">Email Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-regular fa-envelope auth-input-icon"></i>
+                        <input asp-for="Email" class="form-control auth-input" placeholder="ali@example.com" autocomplete="email" />
                     </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label"></label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
+                <div class="auth-field">
+                    <label asp-for="Password">Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock auth-input-icon"></i>
+                        <input asp-for="Password" class="form-control auth-input" placeholder="••••••••" autocomplete="new-password" />
                     </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ConfirmPassword" class="form-label"></label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                <div class="auth-field">
+                    <label asp-for="ConfirmPassword">Confirm Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock auth-input-icon"></i>
+                        <input asp-for="ConfirmPassword" class="form-control auth-input" placeholder="••••••••" autocomplete="new-password" />
                     </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
 
-                    <button type="submit" class="btn btn-primary w-100 py-2">Register</button>
-                </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">Already have an account? <a asp-action="Login">Login here</a></p>
-            </div>
+                <button type="submit" class="btn btn-auth-submit w-100 mt-2">
+                    <i class="fa-solid fa-user-plus me-2"></i> Create Account
+                </button>
+
+                <p class="auth-switch-link">
+                    Already have an account? <a asp-action="Login">Sign in here</a>
+                </p>
+            </form>
+
         </div>
     </div>
+
 </div>
 
 @section Scripts {

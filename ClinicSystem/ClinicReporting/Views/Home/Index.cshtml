@@ -1,8 +1,112 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "MedCenter — Reporting Dashboard";
+    ViewData["AuthPage"] = true;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="landing-wrapper">
+
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+    <section class="landing-hero">
+        <div class="landing-hero-inner">
+
+            <div class="landing-logo-wrap" data-aos="zoom-in" data-aos-duration="600">
+                <img src="~/images/logo.svg" alt="MedCenter" class="landing-logo float-anim" />
+            </div>
+
+            <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:99px;padding:.3rem 1rem;margin-bottom:1.25rem;"
+                 data-aos="fade-up" data-aos-delay="80">
+                <i class="fa-solid fa-chart-line" style="color:#7dd3fc;font-size:.85rem;"></i>
+                <span style="font-size:.8rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.5px;text-transform:uppercase;">Reporting Portal</span>
+            </div>
+
+            <h1 class="landing-headline" data-aos="fade-up" data-aos-delay="150">
+                Clinic Analytics<br><span class="landing-headline-accent">At a Glance.</span>
+            </h1>
+
+            <p class="landing-sub" data-aos="fade-up" data-aos-delay="250">
+                The MedCenter Reporting Portal gives clinic managers a real-time view of<br>
+                appointments, patient trends, and doctor performance — all in one place.
+            </p>
+
+            <div class="landing-cta" data-aos="fade-up" data-aos-delay="350">
+                <a href="#features" class="btn btn-landing-primary">
+                    <i class="fa-solid fa-chart-bar me-2"></i> Explore Reports
+                </a>
+            </div>
+
+            <div class="landing-scroll-hint" data-aos="fade-up" data-aos-delay="500">
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Features ──────────────────────────────────────────────────────── -->
+    <section class="landing-features" id="features">
+        <p class="landing-features-label" data-aos="fade-up">What's inside</p>
+        <h2 class="landing-features-title" data-aos="fade-up" data-aos-delay="60">
+            Data-driven insights for better clinic decisions
+        </h2>
+
+        <div class="landing-features-grid">
+
+            <div class="landing-feature-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="lf-icon" style="background:rgba(59,130,246,0.15);color:#7dd3fc;">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3>Appointment Reports</h3>
+                <p>View daily, weekly, and monthly appointment statistics across all doctors and specializations.</p>
+            </div>
+
+            <div class="landing-feature-card" data-aos="fade-up" data-aos-delay="80">
+                <div class="lf-icon" style="background:rgba(16,185,129,0.15);color:#6ee7b7;">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <h3>Doctor Performance</h3>
+                <p>Track consultations completed, cancellation rates, and availability per doctor.</p>
+            </div>
+
+            <div class="landing-feature-card" data-aos="fade-up" data-aos-delay="160">
+                <div class="lf-icon" style="background:rgba(139,92,246,0.15);color:#c4b5fd;">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h3>Patient Trends</h3>
+                <p>Monitor new registrations, return visit rates, and patient demographics over time.</p>
+            </div>
+
+            <div class="landing-feature-card" data-aos="fade-up" data-aos-delay="240">
+                <div class="lf-icon" style="background:rgba(245,158,11,0.15);color:#fcd34d;">
+                    <i class="fa-solid fa-stethoscope"></i>
+                </div>
+                <h3>Specialization Demand</h3>
+                <p>See which specializations are most in demand and plan resources accordingly.</p>
+            </div>
+
+            <div class="landing-feature-card" data-aos="fade-up" data-aos-delay="320">
+                <div class="lf-icon" style="background:rgba(236,72,153,0.15);color:#f9a8d4;">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <h3>Cancellation Analysis</h3>
+                <p>Identify cancellation patterns and reduce missed appointments with actionable data.</p>
+            </div>
+
+            <div class="landing-feature-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="lf-icon" style="background:rgba(14,165,233,0.15);color:#7dd3fc;">
+                    <i class="fa-solid fa-file-export"></i>
+                </div>
+                <h3>Export Ready</h3>
+                <p>All reports are structured for easy export — share findings with your team instantly.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── Bottom CTA ─────────────────────────────────────────────────────── -->
+    <section class="landing-bottom-cta" data-aos="zoom-in" data-aos-delay="100">
+        <h2>Ready to explore the data?</h2>
+        <p>This portal is reserved for authorized clinic managers only.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-landing-primary btn-lg">
+            <i class="fa-solid fa-right-to-bracket me-2"></i> Access Reports
+        </a>
+    </section>
+
 </div>

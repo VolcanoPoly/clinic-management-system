@@ -1,4 +1,10 @@
-﻿using ClinicAPI.Data;
+/*
+ * Author      : Ali Alsaffar
+ * Student ID  : 202301152
+ * Stage       : Stage 3 - Authentication & Identity
+ * Description : Handles user registration, login, and logout using ASP.NET Core Identity. Redirects authenticated users to their role-specific dashboard upon sign-in.
+ */
+using ClinicAPI.Data;
 using ClinicAPI.Models;
 using ClinicMVC.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;

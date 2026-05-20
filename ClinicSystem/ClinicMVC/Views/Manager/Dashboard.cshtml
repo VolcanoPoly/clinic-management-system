@@ -2,43 +2,58 @@
     ViewData["Title"] = "Manager Dashboard";
 }
 
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm bg-dark text-white text-center p-4">
-            <h1 class="display-4"><i class="bi bi-person-badge"></i></h1>
-            <h3>Manager Portal</h3>
-            <p>System-wide administration</p>
-        </div>
+<div class="welcome-banner manager-banner" data-aos="fade-down">
+    <div class="role-badge"><i class="fa-solid fa-user-tie"></i> Manager Portal</div>
+    <h1><i class="fa-solid fa-gauge-high me-2"></i> Clinic Administration</h1>
+    <p>Full system control — manage doctors, schedules, and clinic operations.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="0">
+        <a asp-action="DoctorsIndex" class="stat-card">
+            <div class="stat-icon" style="background:#ede9fe; color:#6d28d9;">
+                <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div class="stat-title">Doctors</div>
+            <div class="stat-value">Manage Doctors</div>
+            <div class="stat-desc">Add, edit, and deactivate doctor profiles.</div>
+            <div class="stat-action" style="color:#7c3aed;">Manage <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
     </div>
-    <div class="col-md-8">
-        <div class="card shadow-sm h-100 border-0 p-4">
-            <h2 class="mb-4">System Overview</h2>
-            <div class="row g-3">
-                <div class="col-sm-6">
-                    <div class="p-3 border rounded">
-                        <strong>Doctors:</strong> 2 Active
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="p-3 border rounded">
-                        <strong>Patients:</strong> 2 Registered
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="p-3 border rounded">
-                        <strong>Appointments:</strong> 5 Total
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="p-3 border rounded text-success">
-                        <strong>System Status:</strong> Operational
-                    </div>
-                </div>
+
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="80">
+        <a asp-action="Specializations" class="stat-card">
+            <div class="stat-icon" style="background:#e0e7ff; color:#4338ca;">
+                <i class="fa-solid fa-stethoscope"></i>
             </div>
-            <div class="mt-4">
-                <button class="btn btn-dark disabled">Manage Doctors</button>
-                <button class="btn btn-outline-dark disabled">System Logs</button>
+            <div class="stat-title">Specializations</div>
+            <div class="stat-value">Manage Specializations</div>
+            <div class="stat-desc">Control the clinic's medical specialization catalogue.</div>
+            <div class="stat-action" style="color:#4338ca;">Manage <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+    </div>
+
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="160">
+        <a asp-controller="Appointment" asp-action="AllAppointments" class="stat-card">
+            <div class="stat-icon" style="background:#dbeafe; color:#1a6fc4;">
+                <i class="fa-solid fa-calendar-check"></i>
             </div>
+            <div class="stat-title">All Appointments</div>
+            <div class="stat-value">System-Wide View</div>
+            <div class="stat-desc">Browse and filter all clinic appointments.</div>
+            <div class="stat-action">View All <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+    </div>
+
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="240">
+        <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon" style="background:#d1fae5; color:#065f46;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-title">System Status</div>
+            <div class="stat-value" style="color:#16a34a;">Operational</div>
+            <div class="stat-desc">All services running normally.</div>
+            <div class="stat-action" style="color:#16a34a;">Live <span class="ms-1" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;animation:floatY 1s ease-in-out infinite;"></span></div>
         </div>
     </div>
 </div>

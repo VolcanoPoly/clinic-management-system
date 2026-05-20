@@ -1,0 +1,104 @@
+@*
+    Author      : Ali Alsaffar
+    Student ID  : 202301152
+    Stage       : Stage 6 - Appointment Lifecycle Management
+    Description : Receptionist and manager view showing all clinic appointments with search and filter capabilities.
+*@
+@model List<ClinicMVC.Models.ViewModels.AppointmentListItemViewModel>
+@{
+    ViewData["Title"] = "All Appointments";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">All Appointments</h2>
+
+    @if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+    <!-- Filters -->
+    <form method="get" class="card card-body bg-light mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">From Date</label>
+                <input type="date" name="from" class="form-control" value="@ViewBag.FromDate" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">To Date</label>
+                <input type="date" name="to" class="form-control" value="@ViewBag.ToDate" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Doctor</label>
+                <select name="doctorId" class="form-select">
+                    <option value="">All Doctors</option>
+                    @foreach (var d in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Doctors)
+                    {
+                        @if (ViewBag.DoctorId?.ToString() == d.Value)
+                        {
+                            <option value="@d.Value" selected>@d.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@d.Value">@d.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    @foreach (var s in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Statuses)
+                    {
+                        @if (ViewBag.StatusFilter?.ToString() == s.Value)
+                        {
+                            <option value="@s.Value" selected>@s.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@s.Value">@s.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <p class="text-muted">Showing @Model.Count appointment(s)</p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No appointments match the selected filters.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td>@a.AppointmentDateTime.ToString("dd MMM yyyy")<br /><small class="text-muted">@a.AppointmentDateTime.ToString("hh:mm tt")</small></td>
+                            <td>@a.PatientName</td>
+                            <td>@a.DoctorName</td>
+                            <td>@a.SpecializationName</td>
+                            <td>@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td><a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary">View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

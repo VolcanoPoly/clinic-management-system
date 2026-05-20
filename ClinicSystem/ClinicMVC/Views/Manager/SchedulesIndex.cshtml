@@ -1,0 +1,94 @@
+@model ScheduleViewModel
+
+@{
+    ViewData["Title"] = "Edit Schedule";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Schedule for @Model.DoctorName</h2>
+            <p class="text-muted">Weekly working hours (Monday - Friday)</p>
+        </div>
+        <a asp-action="SchedulesLeave" asp-route-doctorId="@Model.DoctorId" class="btn btn-warning">
+            <i class="bi bi-calendar-x"></i> Manage Leave
+        </a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>Please fix the following errors:</strong>
+            <ul class="mb-0">
+                @foreach (var key in ViewData.ModelState.Keys)
+                {
+                    var modelState = ViewData.ModelState[key];
+                    if (modelState.Errors.Count > 0)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    <form method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            @foreach (var day in Model.DaySchedules)
+            {
+                var idx = Model.DaySchedules.IndexOf(day);
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm border-0 h-100" style="border-radius:12px;overflow:hidden;">
+
+                        <!-- Day name banner -->
+                        <div style="background:linear-gradient(135deg,#1a6fc4,#0ea5e9);padding:.75rem 1.1rem;display:flex;align-items:center;gap:.6rem;">
+                            <i class="fa-solid fa-calendar-day" style="color:rgba(255,255,255,.8);font-size:.95rem;"></i>
+                            <span style="font-size:1rem;font-weight:700;color:#fff;letter-spacing:.3px;">@day.DayName</span>
+                        </div>
+
+                        <div class="card-body pt-3 pb-3">
+                            <input type="hidden" name="daySchedules[@idx].Id"        value="@day.Id" />
+                            <input type="hidden" name="daySchedules[@idx].DoctorId"  value="@day.DoctorId" />
+                            <input type="hidden" name="daySchedules[@idx].DayOfWeek" value="@day.DayOfWeek" />
+                            <input type="hidden" name="daySchedules[@idx].DayName"   value="@day.DayName" />
+
+                            <div class="mb-2">
+                                <label for="start_@day.DayOfWeek" class="form-label fw-semibold" style="font-size:.85rem;color:#555;">
+                                    <i class="fa-regular fa-clock me-1" style="color:#0ea5e9;"></i> Start Time
+                                </label>
+                                <input type="time" class="form-control" id="start_@day.DayOfWeek"
+                                       name="daySchedules[@idx].StartTimeString"
+                                       value="@day.StartTimeString" required />
+                            </div>
+
+                            <div class="mb-1">
+                                <label for="end_@day.DayOfWeek" class="form-label fw-semibold" style="font-size:.85rem;color:#555;">
+                                    <i class="fa-regular fa-clock me-1" style="color:#e11d48;"></i> End Time
+                                </label>
+                                <input type="time" class="form-control" id="end_@day.DayOfWeek"
+                                       name="daySchedules[@idx].EndTimeString"
+                                       value="@day.EndTimeString" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Save Schedule</button>
+            <a asp-action="DoctorsIndex" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
