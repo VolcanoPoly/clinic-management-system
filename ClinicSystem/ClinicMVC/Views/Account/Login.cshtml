@@ -10,7 +10,13 @@
                 <h3 class="mb-0">Login</h3>
             </div>
             <div class="card-body p-4">
+                @if (ViewData["InfoMessage"] != null)
+                {
+                    <div class="alert alert-info">@ViewData["InfoMessage"]</div>
+                }
+
                 <form asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     
                     <div class="mb-3">

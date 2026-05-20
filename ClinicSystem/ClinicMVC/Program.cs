@@ -1,14 +1,15 @@
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 // Explicitly bind to the ports to avoid conflicts with port 5000
 builder.WebHost.UseUrls("http://localhost:5298", "https://localhost:7268");
 
-// ── Database & EF Core ──────────────────────────────────────────────────────
-// Uses the shared ApplicationDbContext from the ClinicAPI project reference.
+// ── Database & EF Core ─────────────────────────────────────────────────────-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -27,11 +28,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 // Configure cookie redirect paths
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    // Use a distinct cookie name to avoid collisions with other apps or JWT usage
+    options.Cookie.Name = ".ClinicMVC.Identity";
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
+
+    // security-friendly defaults
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 // ── HttpClient — used ONLY for the public appointment lookup page ────────────
@@ -43,12 +50,12 @@ builder.Services.AddHttpClient("ClinicApiClient", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
-// ── MVC with Views ──────────────────────────────────────────────────────────
+// ── MVC with Views ─────────────────────────────────────────────────────────-
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// ── Middleware Pipeline ─────────────────────────────────────────────────────
+// ── Middleware Pipeline ─────────────────────────────────────────────────----
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -58,6 +65,64 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// diagnostic middleware: log incoming cookie names/lengths and response Set-Cookie headers
+app.Use(async (context, next) =>
+{
+    var logger = app.Logger;
+    try
+    {
+        foreach (var c in context.Request.Cookies)
+        {
+            logger.LogInformation("Incoming cookie '{Name}' length={Length}", c.Key, c.Value?.Length ?? 0);
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning(ex, "Failed to read request cookies");
+    }
+
+    await next();
+
+    try
+    {
+        if (context.Response.Headers.TryGetValue("Set-Cookie", out var setCookie))
+        {
+            logger.LogInformation("Response Set-Cookie header: {SetCookie}", setCookie.ToString());
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning(ex, "Failed to read Set-Cookie response header");
+    }
+});
+
+// Remove malformed or non-base64 auth cookies before the authentication middleware runs
+app.Use(async (context, next) =>
+{
+    const string cookieName = ".ClinicMVC.Identity";
+    if (context.Request.Cookies.TryGetValue(cookieName, out var cookieValue))
+    {
+        bool IsLikelyBase64(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return false;
+            s = s.Trim();
+            // Accept base64 URL-safe alphabet (used by ASP.NET Core data protection) and optional padding '='
+            // Characters allowed: A-Z a-z 0-9 - _ and up to two '=' padding chars
+            return Regex.IsMatch(s, "^[A-Za-z0-9_-]+={0,2}$");
+        }
+
+        if (!IsLikelyBase64(cookieValue))
+        {
+            // Delete both the new cookie name and the default historical cookie name
+            context.Response.Cookies.Delete(cookieName);
+            context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+            app.Logger.LogInformation("Deleted malformed auth cookie '{CookieName}'", cookieName);
+        }
+    }
+
+    await next();
+});
 
 app.UseAuthentication();  // Must come before UseAuthorization
 app.UseAuthorization();

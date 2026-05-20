@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+// Configure cookie name for the API (distinct from MVC) to avoid collisions
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = ".ClinicAPI.Identity";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
 
 // ── JWT Authentication ──────────────────────────────────────────────────────
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -140,6 +149,34 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowClinicClients");
+
+// Remove malformed or non-base64 auth cookies before the authentication middleware runs
+app.Use(async (context, next) =>
+{
+    // Consider both API and MVC cookie names
+    string[] cookieNames = new[] { ".ClinicAPI.Identity", ".ClinicMVC.Identity", ".AspNetCore.Identity.Application" };
+    foreach (var cookieName in cookieNames)
+    {
+        if (context.Request.Cookies.TryGetValue(cookieName, out var cookieValue))
+        {
+            bool IsLikelyBase64(string s)
+            {
+                if (string.IsNullOrWhiteSpace(s)) return false;
+                s = s.Trim();
+                // Accept base64 URL-safe alphabet (used by ASP.NET Core data protection) and optional padding '='
+                return Regex.IsMatch(s, "^[A-Za-z0-9_-]+={0,2}$");
+            }
+
+            if (!IsLikelyBase64(cookieValue))
+            {
+                context.Response.Cookies.Delete(cookieName);
+            }
+        }
+    }
+
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 

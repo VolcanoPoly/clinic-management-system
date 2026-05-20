@@ -3,6 +3,8 @@ using ClinicAPI.Models;
 using ClinicMVC.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace ClinicMVC.Controllers
 {
@@ -11,14 +13,17 @@ namespace ClinicMVC.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                  SignInManager<ApplicationUser> signInManager,
-                                 ApplicationDbContext context)
+                                 ApplicationDbContext context,
+                                 ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -76,6 +81,11 @@ namespace ClinicMVC.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (TempData["AuthCookieCleared"] != null)
+            {
+                ViewData["InfoMessage"] = "Your browser had a corrupted authentication cookie which was cleared. Please sign in again.";
+            }
+
             return View();
         }
 
@@ -83,16 +93,55 @@ namespace ClinicMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            _logger.LogInformation("Login POST received for {Email}. ModelState.IsValid={IsValid}", model?.Email, ModelState.IsValid);
+
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
+                try
                 {
-                    return RedirectToAction("Index", "Home");
-                }
+                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    _logger.LogInformation("PasswordSignInAsync result for {Email}: Succeeded={Succeeded}, IsLockedOut={IsLockedOut}, IsNotAllowed={IsNotAllowed}, RequiresTwoFactor={RequiresTwoFactor}",
+                        model.Email,
+                        result.Succeeded,
+                        result.IsLockedOut,
+                        result.IsNotAllowed,
+                        result.RequiresTwoFactor);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        ModelState.AddModelError(string.Empty, "Account locked out.");
+                    }
+                    else if (result.IsNotAllowed)
+                    {
+                        ModelState.AddModelError(string.Empty, "Login not allowed.");
+                    }
+                    else if (result.RequiresTwoFactor)
+                    {
+                        ModelState.AddModelError(string.Empty, "Two-factor authentication required.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    // Likely caused by a corrupted or non-base64 authentication cookie. Clear auth cookies and redirect to GET login.
+                    _logger.LogWarning(ex, "FormatException during PasswordSignInAsync, clearing auth cookies.");
+
+                    await _signInManager.SignOutAsync();
+                    Response.Cookies.Delete(".AspNetCore.Identity.Application");
+                    Response.Cookies.Delete(".ClinicMVC.Identity");
+
+                    TempData["AuthCookieCleared"] = "1";
+                    return RedirectToAction("Login");
+                }
             }
 
             return View(model);
