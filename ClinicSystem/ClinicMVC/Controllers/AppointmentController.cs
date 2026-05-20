@@ -22,15 +22,18 @@ namespace ClinicMVC.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AvailabilityService _availability;
+        private readonly INotificationService _notifications;
 
         public AppointmentController(
             ApplicationDbContext db,
             UserManager<ApplicationUser> userManager,
-            AvailabilityService availability)
+            AvailabilityService availability,
+            INotificationService notifications)
         {
             _db = db;
             _userManager = userManager;
             _availability = availability;
+            _notifications = notifications;
         }
 
         // ──────────────────────────────────────────────────────────────────────
@@ -325,16 +328,10 @@ namespace ClinicMVC.Controllers
                 .FirstOrDefaultAsync(d => d.Id == vm.DoctorId);
 
             if (doctor?.UserId != null)
-            {
-                _db.Notifications.Add(new Notification
-                {
-                    RecipientUserId = doctor.UserId,
-                    Message = $"New appointment request from {currentUser.FirstName} {currentUser.LastName} on {vm.AppointmentDateTime:dd MMM yyyy} at {vm.AppointmentDateTime:HH:mm}.",
-                    RelatedAppointmentId = appointment.Id,
-                    CreatedAt = DateTime.Now
-                });
-                await _db.SaveChangesAsync();
-            }
+                await _notifications.SendNotificationAsync(
+                    doctor.UserId,
+                    $"New appointment request from {currentUser.FirstName} {currentUser.LastName} on {vm.AppointmentDateTime:dd MMM yyyy} at {vm.AppointmentDateTime:hh:mm tt}.",
+                    appointment.Id);
 
             TempData["Success"] = "Appointment request submitted successfully.";
             return RedirectToAction(nameof(MyAppointments));
@@ -654,36 +651,53 @@ namespace ClinicMVC.Controllers
             AppointmentStatus newStatus,
             ApplicationUser changedBy)
         {
-            var notifications = new List<Notification>();
-            var msg = $"Appointment on {appointment.AppointmentDateTime:dd MMM yyyy HH:mm} " +
-                      $"status changed from {oldStatus} to {newStatus}.";
+            var date = appointment.AppointmentDateTime.ToString("dd MMM yyyy");
+            var time = appointment.AppointmentDateTime.ToString("hh:mm tt");
+            var patientName = $"{appointment.Patient?.User?.FirstName} {appointment.Patient?.User?.LastName}";
+            var patientUserId = appointment.Patient?.UserId;
+            var doctorUserId  = appointment.Doctor?.UserId;
 
-            // Notify patient
-            if (appointment.Patient?.UserId != null)
+            switch (newStatus)
             {
-                notifications.Add(new Notification
-                {
-                    RecipientUserId    = appointment.Patient.UserId,
-                    Message            = msg,
-                    RelatedAppointmentId = appointment.Id,
-                    CreatedAt          = DateTime.Now
-                });
-            }
+                case AppointmentStatus.Confirmed:
+                    if (patientUserId != null)
+                        await _notifications.SendNotificationAsync(patientUserId,
+                            $"Your appointment on {date} at {time} has been confirmed.", appointment.Id);
+                    break;
 
-            // Notify doctor (unless the doctor made the change themselves)
-            if (appointment.Doctor?.UserId != null && appointment.Doctor.UserId != changedBy.Id)
-            {
-                notifications.Add(new Notification
-                {
-                    RecipientUserId    = appointment.Doctor.UserId,
-                    Message            = msg,
-                    RelatedAppointmentId = appointment.Id,
-                    CreatedAt          = DateTime.Now
-                });
-            }
+                case AppointmentStatus.CheckedIn:
+                    if (doctorUserId != null && doctorUserId != changedBy.Id)
+                        await _notifications.SendNotificationAsync(doctorUserId,
+                            $"Patient {patientName} has checked in for their {date} appointment.", appointment.Id);
+                    break;
 
-            if (notifications.Count > 0)
-                _db.Notifications.AddRange(notifications);
+                case AppointmentStatus.InProgress:
+                    if (patientUserId != null && patientUserId != changedBy.Id)
+                        await _notifications.SendNotificationAsync(patientUserId,
+                            $"Your appointment on {date} at {time} is now in progress.", appointment.Id);
+                    break;
+
+                case AppointmentStatus.Completed:
+                    if (patientUserId != null)
+                        await _notifications.SendNotificationAsync(patientUserId,
+                            $"Your appointment on {date} is complete. Your visit record is now available.", appointment.Id);
+                    break;
+
+                case AppointmentStatus.Cancelled:
+                    if (patientUserId != null && changedBy.Id != patientUserId)
+                        await _notifications.SendNotificationAsync(patientUserId,
+                            $"Your appointment on {date} at {time} has been cancelled.", appointment.Id);
+                    if (doctorUserId != null && changedBy.Id != doctorUserId)
+                        await _notifications.SendNotificationAsync(doctorUserId,
+                            $"Appointment with {patientName} on {date} at {time} has been cancelled.", appointment.Id);
+                    break;
+
+                case AppointmentStatus.Missed:
+                    if (patientUserId != null)
+                        await _notifications.SendNotificationAsync(patientUserId,
+                            $"Your appointment on {date} at {time} was marked as missed.", appointment.Id);
+                    break;
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
 using ClinicMVC.Models.ViewModels;
+using ClinicMVC.Services;
 
 namespace ClinicMVC.Controllers
 {
@@ -19,11 +20,16 @@ namespace ClinicMVC.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly INotificationService _notifications;
 
-        public DoctorController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        public DoctorController(
+            ApplicationDbContext dbContext,
+            UserManager<ApplicationUser> userManager,
+            INotificationService notifications)
         {
             _dbContext = dbContext;
             _userManager = userManager;
+            _notifications = notifications;
         }
 
         public IActionResult Dashboard()
@@ -240,23 +246,16 @@ namespace ClinicMVC.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                // Create notification for patient
+                // Notify patient that visit record is ready
                 var appointmentData = await _dbContext.Appointments
-                    .Include(a => a.Patient)
+                    .Include(a => a.Patient).ThenInclude(p => p.User)
                     .FirstOrDefaultAsync(a => a.Id == model.AppointmentId);
 
                 if (appointmentData?.Patient?.User != null)
-                {
-                    var notification = new Notification
-                    {
-                        RecipientUserId = appointmentData.Patient.User.Id,
-                        Message = "Your visit record has been created by Dr. " + model.DoctorName,
-                        CreatedAt = DateTime.Now,
-                        RelatedAppointmentId = model.AppointmentId
-                    };
-                    _dbContext.Notifications.Add(notification);
-                    await _dbContext.SaveChangesAsync();
-                }
+                    await _notifications.SendNotificationAsync(
+                        appointmentData.Patient.User.Id,
+                        $"Your visit record from Dr. {model.DoctorName} is now available.",
+                        model.AppointmentId);
 
                 return RedirectToAction(nameof(VisitRecordDetail), new { id = visitRecord.Id });
             }
@@ -402,7 +401,7 @@ namespace ClinicMVC.Controllers
                 _dbContext.Prescriptions.Add(prescription);
                 await _dbContext.SaveChangesAsync();
 
-                // Create notification
+                // Notify patient about new prescription
                 var visitRecord = await _dbContext.VisitRecords
                     .Include(v => v.Appointment)
                         .ThenInclude(a => a.Patient)
@@ -410,17 +409,10 @@ namespace ClinicMVC.Controllers
                     .FirstOrDefaultAsync(v => v.Id == model.VisitRecordId);
 
                 if (visitRecord?.Appointment?.Patient?.User != null)
-                {
-                    var notification = new Notification
-                    {
-                        RecipientUserId = visitRecord.Appointment.Patient.User.Id,
-                        Message = "A new prescription has been issued for you",
-                        CreatedAt = DateTime.Now,
-                        RelatedAppointmentId = visitRecord.AppointmentId
-                    };
-                    _dbContext.Notifications.Add(notification);
-                    await _dbContext.SaveChangesAsync();
-                }
+                    await _notifications.SendNotificationAsync(
+                        visitRecord.Appointment.Patient.User.Id,
+                        "A new prescription has been issued for you. You can view it in your medical history.",
+                        visitRecord.AppointmentId);
 
                 return RedirectToAction(nameof(ViewPrescription), new { id = prescription.Id });
             }

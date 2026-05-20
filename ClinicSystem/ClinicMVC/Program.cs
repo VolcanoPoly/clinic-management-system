@@ -59,6 +59,7 @@ builder.Services.AddHttpClient("ClinicApiClient", client =>
 
 // ── Application Services ────────────────────────────────────────────────────
 builder.Services.AddScoped<AvailabilityService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // ── MVC with Views ──────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
