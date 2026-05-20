@@ -10,7 +10,7 @@
             <h2><i class="fa-solid fa-stethoscope me-2" style="color:#4338ca;"></i> Specializations</h2>
             <p class="text-muted mb-0">Manage the clinic's medical specialization catalogue.</p>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <button id="btnOpenCreate" type="button" class="btn btn-primary">
             <i class="fa-solid fa-plus me-1"></i> Add Specialization
         </button>
     </div>
@@ -56,9 +56,8 @@
                                 <span class="badge bg-info text-dark">@spec.DoctorCount</span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-warning me-1"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editModal"
+                                <button type="button"
+                                        class="btn btn-sm btn-warning me-1 btn-open-edit"
                                         data-id="@spec.Id"
                                         data-name="@spec.Name"
                                         data-description="@spec.Description">
@@ -93,14 +92,14 @@
 </div>
 
 <!-- Create Modal -->
-<div class="modal fade" id="createModal" tabindex="-1">
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form asp-action="SpecializationsCreate" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-plus me-2"></i> Add Specialization</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="createModalLabel"><i class="fa-solid fa-plus me-2"></i> Add Specialization</h5>
+                    <button type="button" class="btn-close" id="btnCloseCreate" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -114,7 +113,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" id="btnCancelCreate">Cancel</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="fa-solid fa-plus me-1"></i> Create
                     </button>
@@ -125,15 +124,15 @@
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1">
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form asp-action="SpecializationsEdit" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="Id" id="editId" />
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-pencil me-2"></i> Edit Specialization</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="editModalLabel"><i class="fa-solid fa-pencil me-2"></i> Edit Specialization</h5>
+                    <button type="button" class="btn-close" id="btnCloseEdit" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -146,7 +145,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" id="btnCancelEdit">Cancel</button>
                     <button type="submit" class="btn btn-warning">
                         <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
                     </button>
@@ -158,12 +157,35 @@
 
 @section Scripts {
 <script>
-    // Populate edit modal with row data
-    document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
-        var btn = e.relatedTarget;
-        document.getElementById('editId').value          = btn.dataset.id;
-        document.getElementById('editName').value        = btn.dataset.name;
-        document.getElementById('editDescription').value = btn.dataset.description;
-    });
+    (function () {
+        var createModalEl = document.getElementById('createModal');
+        var editModalEl   = document.getElementById('editModal');
+
+        var createModal = new bootstrap.Modal(createModalEl);
+        var editModal   = new bootstrap.Modal(editModalEl);
+
+        // Open create modal
+        document.getElementById('btnOpenCreate').addEventListener('click', function () {
+            createModal.show();
+        });
+
+        // Close buttons for create modal
+        document.getElementById('btnCloseCreate').addEventListener('click', function () { createModal.hide(); });
+        document.getElementById('btnCancelCreate').addEventListener('click', function () { createModal.hide(); });
+
+        // Close buttons for edit modal
+        document.getElementById('btnCloseEdit').addEventListener('click', function () { editModal.hide(); });
+        document.getElementById('btnCancelEdit').addEventListener('click', function () { editModal.hide(); });
+
+        // Open edit modal and populate fields
+        document.querySelectorAll('.btn-open-edit').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.getElementById('editId').value          = this.dataset.id;
+                document.getElementById('editName').value        = this.dataset.name;
+                document.getElementById('editDescription').value = this.dataset.description;
+                editModal.show();
+            });
+        });
+    })();
 </script>
 }
