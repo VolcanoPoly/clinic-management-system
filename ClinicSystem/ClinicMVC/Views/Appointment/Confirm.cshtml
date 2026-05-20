@@ -74,7 +74,13 @@
                 <input type="hidden" name="Notes" value="@Model.Notes" />
 
                 <div class="d-flex gap-2">
-                    <button type="button" onclick="history.back()" class="btn btn-outline-secondary">&larr; Back</button>
+                    <a asp-action="SelectSlot"
+                       asp-route-doctorId="@Model.DoctorId"
+                       asp-route-date="@Model.AppointmentDateTime.ToString("yyyy-MM-dd")"
+                       asp-route-specializationId="@Model.SpecializationId"
+                       asp-route-patientId="@Model.PatientId"
+                       asp-route-notes="@Model.Notes"
+                       class="btn btn-outline-secondary">&larr; Back</a>
                     <button type="submit" class="btn btn-success btn-lg flex-grow-1">
                         Confirm Appointment
                     </button>

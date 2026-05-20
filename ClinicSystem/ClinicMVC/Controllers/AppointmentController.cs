@@ -170,7 +170,47 @@ namespace ClinicMVC.Controllers
             return Json(slots);
         }
 
-        // Step 4: Confirm booking — show summary
+        // Step 3 GET: re-render slot selection (used by the Back button on the Confirm page)
+        [Authorize(Roles = "Patient,Receptionist")]
+        [HttpGet]
+        public async Task<IActionResult> SelectSlot(int doctorId, DateTime date, int specializationId, int? patientId, string? notes)
+        {
+            var doctor = await _db.Doctors.Include(d => d.User).FirstOrDefaultAsync(d => d.Id == doctorId);
+            var spec = await _db.Specializations.FindAsync(specializationId);
+            if (doctor == null || spec == null) return RedirectToAction(nameof(Book));
+
+            var slots = await _availability.GetAvailableSlotsAsync(doctorId, date);
+            var vm = new AppointmentSelectSlotViewModel
+            {
+                DoctorId = doctorId,
+                DoctorName = $"Dr. {doctor.User?.FirstName} {doctor.User?.LastName}",
+                Date = date,
+                SpecializationId = specializationId,
+                SpecializationName = spec.Name,
+                PatientId = patientId,
+                Notes = notes,
+                AvailableSlots = slots
+            };
+            return View(vm);
+        }
+
+        // Step 4 GET: render confirmation page from TempData (PRG pattern — prevents ERR_CACHE_MISS on back/refresh)
+        [Authorize(Roles = "Patient,Receptionist")]
+        [HttpGet]
+        public IActionResult Confirm()
+        {
+            if (TempData["ConfirmData"] is not string json)
+                return RedirectToAction(nameof(Book));
+
+            var vm = System.Text.Json.JsonSerializer.Deserialize<AppointmentConfirmViewModel>(json);
+            if (vm == null) return RedirectToAction(nameof(Book));
+
+            // Re-store so the page survives a browser refresh without ERR_CACHE_MISS
+            TempData["ConfirmData"] = json;
+            return View(vm);
+        }
+
+        // Step 4 POST: validate slot, build summary, redirect to GET (PRG)
         [Authorize(Roles = "Patient,Receptionist")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -236,7 +276,9 @@ namespace ClinicMVC.Controllers
                 Notes = input.Notes
             };
 
-            return View(vm);
+            // PRG: store in TempData and redirect to GET so back/refresh never triggers ERR_CACHE_MISS
+            TempData["ConfirmData"] = System.Text.Json.JsonSerializer.Serialize(vm);
+            return RedirectToAction(nameof(Confirm));
         }
 
         // Final POST: create the appointment
