@@ -1,8 +1,7 @@
 # IT8118 — Complete Sequential Step-by-Step Guide
-## Healthcare Clinic System (Brief A) — Ali + AI Agent Workflow
+## Healthcare Clinic System (Brief A)
 
-> Follow every step in order. Do not skip steps. Each step says exactly who does it and what to do.  
-> **Ali** = you do it manually. **AI Agent** = ask the AI Code Agent to do it (paste the prompt given).  
+> Follow every step in order. Do not skip steps.  
 > Check the box when a step is done before moving to the next.
 
 ---
@@ -55,27 +54,20 @@
 
 ---
 
-### Step 4 — `AI AGENT`
-**Prompt to give the AI:**
+### Step 4
+**Create the three ASP.NET Core projects inside the solution**
 
-> "Create the three ASP.NET Core projects inside a Visual Studio solution for Brief A (Healthcare Clinic system). The solution is named `ClinicSystem`. Create:
-> 1. `ClinicAPI` — ASP.NET Core Web API (.NET 9)
-> 2. `ClinicMVC` — ASP.NET Core MVC (.NET 9), with a project reference to ClinicAPI
-> 3. `ClinicReporting` — ASP.NET Core MVC (.NET 9), NO project reference to ClinicAPI
->
-> For each project, give me the exact steps to add it in Visual Studio and the complete `Program.cs` starter code with all needed services registered (EF Core, Identity, JWT, SignalR for ClinicAPI; EF Core, Identity, HttpClient for ClinicMVC; HttpClient only for ClinicReporting). Also give me the `appsettings.json` for all three with placeholder connection string and JWT settings."
-
-- [x] The AI will give you code and steps — follow them to add all 3 projects to your solution
+- [x] Add `ClinicAPI` — ASP.NET Core Web API (.NET 9)
+- [x] Add `ClinicMVC` — ASP.NET Core MVC (.NET 9), with a project reference to ClinicAPI
+- [x] Add `ClinicReporting` — ASP.NET Core MVC (.NET 9), NO project reference to ClinicAPI
 
 ---
 
-### Step 5 — `AI AGENT` ✅ COMPLETED
-**Prompt to give the AI:**
-
-> "Give me the complete list of NuGet packages I need to install for each of the three projects in the ClinicSystem solution. For each package, tell me which project it goes in, the package name, and the exact command to install it via the NuGet Package Manager Console."
+### Step 5 ✅ COMPLETED
+**Install NuGet packages for all three projects**
 
 - [x] Open **Tools → NuGet Package Manager → Package Manager Console** in Visual Studio
-- [x] Run every command the AI gives you
+- [x] Install all required NuGet packages for each project
 - [x] Confirm all packages install without errors
 
 > Completed as part of Step 4 — NuGet install commands were included in the Step 4 GUIDE.md.
@@ -101,44 +93,19 @@
 
 ---
 
-### Step 7 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Design and write all entity/domain classes for the Healthcare Clinic system (Brief A) in the `ClinicAPI/Models/` folder. I need the following entities:
-> - `ApplicationUser` (extends IdentityUser, adds FirstName, LastName)
-> - `Doctor` (linked to ApplicationUser, has LicenseNumber, Bio)
-> - `Specialization` (Id, Name, Description)
-> - `DoctorSpecialization` (junction table — DoctorId, SpecializationId)
-> - `DoctorSchedule` (DoctorId, DayOfWeek, StartTime, EndTime)
-> - `DoctorLeave` (DoctorId, StartDate, EndDate, Reason)
-> - `Patient` (linked to ApplicationUser, CPRNumber, ReferenceNumber, DateOfBirth, BloodType, EmergencyContact)
-> - `Appointment` (PatientId, DoctorId, SpecializationId, AppointmentDateTime, Status enum, Notes, CancellationReason)
-> - `AppointmentStatusHistory` (AppointmentId, OldStatus, NewStatus, ChangedAt, ChangedByUserId)
-> - `VisitRecord` (AppointmentId, DoctorNotes, Diagnosis, Treatment, CreatedAt)
-> - `Prescription` (VisitRecordId, DoctorId, IssuedAt)
-> - `PrescriptionItem` (PrescriptionId, MedicationName, Dosage, Frequency, Duration, Instructions)
-> - `Notification` (RecipientUserId, Message, IsRead, CreatedAt, RelatedAppointmentId)
->
-> Also write the `AppointmentStatus` enum with values: Requested, Confirmed, CheckedIn, InProgress, Completed, Cancelled, Missed.
-> Write each class as a complete C# file."
+### Step 7
+**Create all entity/domain classes**
 
 - [x] Create a `Models` folder inside `ClinicAPI`
-- [x] Create each file the AI gives you inside that folder
+- [x] Create each entity class file inside that folder
 
 ---
 
-### Step 8 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Write the complete `ApplicationDbContext.cs` for the ClinicSystem project. It should:
-> - Extend `IdentityDbContext<ApplicationUser>`
-> - Include DbSet for every entity (Doctor, Patient, Appointment, VisitRecord, Prescription, PrescriptionItem, Notification, DoctorSchedule, DoctorLeave, Specialization, DoctorSpecialization, AppointmentStatusHistory)
-> - Use Fluent API in `OnModelCreating` to configure all relationships (one-to-many, many-to-many with DoctorSpecialization junction table, cascade delete rules)
-> - Seed the 4 roles: Patient, Doctor, Receptionist, ClinicManager
-> Place this in `ClinicAPI/Data/ApplicationDbContext.cs`"
+### Step 8
+**Write the ApplicationDbContext**
 
 - [x] Create a `Data` folder inside `ClinicAPI`
-- [x] Create `ApplicationDbContext.cs` with the AI's code
+- [x] Create `ApplicationDbContext.cs`
 
 ---
 
@@ -153,7 +120,7 @@
   }
   ```
 - [x] Open `ClinicMVC/appsettings.json` and add the same connection string
-- [x] Confirm `Program.cs` in both `ClinicAPI` and `ClinicMVC` registers the DbContext (the AI should have done this in Step 4 — verify it is there)
+- [x] Confirm `Program.cs` in both `ClinicAPI` and `ClinicMVC` registers the DbContext (verify it is there)
 
 ---
 
@@ -175,23 +142,8 @@
 
 ---
 
-### Step 11 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Write a complete SQL seed script (`seed.sql`) for the ClinicSystem database. It should insert:
-> - 1 Clinic Manager user account (email: manager@clinic.com, password hash for: Manager@123)
-> - 2 Doctor user accounts (doctor1@clinic.com / Doctor@123, doctor2@clinic.com / Doctor@123)
-> - 1 Receptionist user account (receptionist@clinic.com / Recept@123)
-> - 2 Patient user accounts (patient1@clinic.com / Patient@123, patient2@clinic.com / Patient@123)
-> - Specializations: General Practice, Cardiology, Dermatology, Pediatrics
-> - Doctor profiles linked to the doctor users, each with 2 specializations
-> - Doctor schedules (Mon–Fri, 8am–5pm)
-> - Patient profiles with CPR numbers and reference numbers
-> - 5 sample appointments in various statuses
-> - 2 VisitRecords with prescriptions for completed appointments
-> - Sample notifications
->
-> Use ASP.NET Core Identity password hashing format. Assign correct roles to each user in the AspNetUserRoles table."
+### Step 11
+**Create and run the seed script**
 
 - [x] Save the file as `seed.sql` in the root of your repo
 - [x] Open SSMS → connect to your local DB → open the script → run it
@@ -214,21 +166,10 @@ git push origin main
 
 ---
 
-### Step 13 — `AI AGENT`
-**Prompt to give the AI:**
+### Step 13
+**Implement ASP.NET Core Identity authentication**
 
-> "Implement ASP.NET Core Identity authentication for the `ClinicMVC` project. I need:
-> 1. A complete `AccountController.cs` with actions: Register (GET+POST), Login (GET+POST), Logout, AccessDenied
-> 2. Razor views for: Register, Login (in `Views/Account/`)
-> 3. A `RegisterViewModel.cs` and `LoginViewModel.cs` with validation attributes
-> 4. The Register form should capture: FirstName, LastName, Email, Password, ConfirmPassword, and Role (dropdown: Patient only — public registration is for patients only)
-> 5. After registration, assign the Patient role and create a `Patient` profile record
-> 6. After login, redirect to a role-specific dashboard
-> 7. A `_LoginPartial.cshtml` partial view showing login/logout links and the logged-in user's name + role
-> 
-> Use ASP.NET Core Identity (cookie-based) for the MVC app. Place all files in the correct folders."
-
-- [x] Create all the files the AI gives you in the correct locations
+- [x] Create all files in the correct locations
 - [x] Run the app (`F5` in Visual Studio) and test:
   - [x] Register a new patient account
   - [x] Log in with that account
@@ -236,16 +177,8 @@ git push origin main
 
 ---
 
-### Step 14 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement role-based dashboards in `ClinicMVC`. Create a `HomeController.cs` with an `Index` action that redirects to the correct dashboard based on the logged-in user's role:
-> - Patient → `PatientController/Dashboard`
-> - Doctor → `DoctorController/Dashboard`
-> - Receptionist → `ReceptionistController/Dashboard`
-> - ClinicManager → `ManagerController/Dashboard`
->
-> Create stub controllers and views for each role with a simple welcome message and a placeholder navigation menu. Add `[Authorize(Roles = '...')]` to each controller. Also update `_Layout.cshtml` to show role-based navigation links."
+### Step 14
+**Implement role-based dashboards**
 
 - [x] Create all files
 - [x] Test: log in as each seeded role and confirm you land on the correct dashboard
@@ -268,26 +201,8 @@ git push origin main
 
 ---
 
-### Step 16 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement Doctor and Specialization management for the `ClinicManager` role in `ClinicMVC`. I need:
->
-> 1. `ManagerController.cs` with actions for:
->    - List all doctors (with their specializations)
->    - Create doctor (creates both an ApplicationUser + Doctor record, assigns Doctor role, sets password)
->    - Edit doctor profile (name, bio, license number, specializations)
->    - View doctor schedule (their weekly working hours)
->    - Edit doctor schedule (add/edit/remove working days and hours)
->    - Add doctor leave (date range + reason)
->    - View upcoming leaves for a doctor
->    - Deactivate a doctor account
->
-> 2. All corresponding Razor views (strongly-typed with ViewModels)
-> 3. ViewModels: `DoctorListViewModel`, `DoctorCreateViewModel`, `DoctorEditViewModel`, `ScheduleViewModel`, `LeaveViewModel`
-> 4. A `SpecializationController.cs` for CRUD of specializations (Clinic Manager only)
->
-> Use EF Core directly (not API calls). Apply `[Authorize(Roles = 'ClinicManager')]` to all actions. Add success/error TempData messages."
+### Step 16
+**Implement Doctor and Specialization management**
 
 - [x] Create all files
 - [x] Log in as Clinic Manager and test:
@@ -314,25 +229,8 @@ git push origin main
 
 ---
 
-### Step 18 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement the appointment booking feature in `ClinicMVC`. I need a multi-step booking flow:
->
-> Step 1: Patient selects a specialization (dropdown of all specializations)
-> Step 2: System shows doctors who have that specialization (with their next available dates)
-> Step 3: Patient selects a doctor and a date — system shows available time slots for that date (respects the doctor's DoctorSchedule and DoctorLeave and existing Appointments — no double booking)
-> Step 4: Patient confirms the booking — Appointment created with Status = Requested
->
-> Requirements:
-> - `AppointmentController.cs` with actions: `Book` (GET shows step 1), `SelectDoctor` (POST step 1 → GET step 2), `SelectSlot` (POST step 2 → GET step 3), `Confirm` (POST step 3 → creates appointment)
-> - A `AvailabilityService.cs` that calculates available 30-minute time slots for a given doctor and date (filters out booked slots, leave periods, outside working hours)
-> - Receptionist can also book — they see an extra dropdown to select which patient they are booking for
-> - Strongly-typed ViewModels for each step
-> - Validation: cannot book in the past, cannot book on a day the doctor is not available
-> - On successful booking: create a Notification for the doctor ('New appointment request from [patient name]')
->
-> Apply `[Authorize(Roles = 'Patient,Receptionist')]` to the booking actions."
+### Step 18
+**Implement the appointment booking feature**
 
 - [x] Create all files
 - [x] Test the full booking flow as a Patient
@@ -356,36 +254,8 @@ git push origin main
 
 ---
 
-### Step 20 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement appointment lifecycle management in `ClinicMVC`. The status flow is:
-> Requested → Confirmed → CheckedIn → InProgress → Completed / Cancelled / Missed
->
-> I need:
-> 1. `AppointmentController.cs` additional actions:
->    - `MyAppointments` — Patient sees their own appointments
->    - `TodaysAppointments` — Receptionist sees today's appointments (sortable list)
->    - `DoctorAppointments` — Doctor sees their upcoming and past appointments
->    - `AllAppointments` — Clinic Manager sees all appointments with filters (date range, doctor, status)
->    - `UpdateStatus(int id, AppointmentStatus newStatus, string reason)` — POST action that:
->      a. Validates the transition is allowed (enforce the valid transitions only)
->      b. Updates the appointment status
->      c. Creates an `AppointmentStatusHistory` record
->      d. Sends a Notification to the relevant parties
->      e. If status = Completed: redirects to CreateVisitRecord page
->      f. If status = Missed/Cancelled: records reason
->    - `Cancel(int id)` — Patient can cancel their own upcoming appointment (only if Requested or Confirmed)
->
-> 2. Role-based status buttons on the appointment detail view:
->    - Receptionist buttons: Confirm, Mark CheckedIn, Cancel
->    - Doctor buttons: Start (InProgress), Complete, Mark Missed
->    - Patient buttons: Cancel (only if Requested or Confirmed)
->
-> 3. An `AppointmentDetailViewModel` showing full appointment info + status history timeline
-> 4. All views strongly-typed, with Bootstrap badge colors per status
->
-> Use EF Core directly. Notifications sent on every status change."
+### Step 20
+**Implement appointment lifecycle management**
 
 - [x] Create all files
 - [x] Test the full lifecycle as each role:
@@ -411,33 +281,8 @@ git push origin main
 
 ---
 
-### Step 22 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement Visit Records and Prescriptions in `ClinicMVC`. I need:
->
-> 1. After an appointment is marked Completed, the Doctor is redirected to a `CreateVisitRecord` page
-> 2. `VisitRecordController.cs` with:
->    - `Create(int appointmentId)` GET+POST — Doctor fills in: Notes, Diagnosis, Treatment, then can add prescription items
->    - `Details(int id)` — view a visit record (Doctor sees all their patients'; Patient sees only their own)
->    - `PatientHistory(int patientId)` — full visit history for a patient (Doctor and Manager see this)
->    - `MyHistory()` — Patient sees their own full visit history
->
-> 3. `PrescriptionController.cs` with:
->    - `Create(int visitRecordId)` GET+POST — Doctor adds a prescription with 1+ medication items
->    - `AddItem` — AJAX or partial to add another medication row dynamically
->    - `Details(int id)` — view a prescription (Patient sees their own; Doctor sees ones they wrote)
->    - `Print(int id)` — printer-friendly prescription view
->
-> 4. ViewModels: `VisitRecordCreateViewModel`, `VisitRecordDetailsViewModel`, `PrescriptionViewModel`, `PrescriptionItemViewModel`
->
-> 5. Access rules:
->    - Only the treating Doctor can create a VisitRecord for an appointment
->    - Patients can only view their own records
->    - Doctors can view records for appointments they conducted
->    - Clinic Manager can view all records
->
-> Use EF Core directly."
+### Step 22
+**Implement Visit Records and Prescriptions**
 
 - [ ] Create all files
 - [ ] Test: complete an appointment → fill visit record → add prescription
@@ -461,33 +306,8 @@ git push origin main
 
 ---
 
-### Step 24 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement the in-system notifications feature in `ClinicMVC`. I need:
->
-> 1. A `NotificationService.cs` with a method `SendNotification(string userId, string message, int? relatedAppointmentId)` — creates a Notification record in the DB. Call this from AppointmentController on every status change.
->
-> 2. A `NotificationController.cs` with:
->    - `Index()` — list all notifications for the logged-in user, newest first, with unread highlighted
->    - `MarkRead(int id)` — mark one notification as read
->    - `MarkAllRead()` — mark all as read
->    - `GetUnreadCount()` — returns JSON count (for the bell badge)
->
-> 3. Update `_Layout.cshtml` to show a notification bell icon in the navbar with:
->    - A red badge showing the unread count (fetched via AJAX every 30 seconds using `GetUnreadCount`)
->    - Clicking the bell links to the notification list page
->
-> 4. Notifications should be sent when:
->    - New appointment booked → notify the Doctor
->    - Appointment Confirmed → notify the Patient
->    - Appointment Cancelled → notify the other party (if doctor cancels, notify patient; if patient cancels, notify doctor)
->    - Appointment Missed → notify the Patient
->    - Appointment Completed → notify the Patient ('Your visit record is ready')
->    - New prescription added → notify the Patient
->    - Doctor schedule changed and it affects an existing appointment → notify the Patient
->
-> Use EF Core directly."
+### Step 24
+**Implement the in-system notifications feature**
 
 - [ ] Create all files
 - [ ] Test: book appointment → confirm doctor gets notification
@@ -511,34 +331,8 @@ git push origin main
 
 ---
 
-### Step 26 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement the Web API endpoints in `ClinicAPI`. I need these controllers:
->
-> 1. `AuthController.cs`:
->    - `POST /api/auth/login` — accepts email+password, validates against Identity, returns a signed JWT token with claims (userId, email, role). No auth required.
->
-> 2. `AppointmentsController.cs` (API):
->    - `GET /api/appointments/lookup?cpr={cpr}&ref={ref}` — PUBLIC (no JWT). Finds the patient by CPR+reference number, returns their upcoming appointments and last 3 visit summaries as JSON.
->    - `GET /api/appointments` — JWT required (Receptionist or ClinicManager). Returns list of appointments with filters (date, doctorId, status) as query params.
->    - `GET /api/appointments/{id}` — JWT required. Returns single appointment detail with status history.
->
-> 3. `DoctorsController.cs` (API):
->    - `GET /api/doctors` — JWT required. Returns list of doctors with their specializations.
->    - `GET /api/doctors/{id}/availability?date={date}` — JWT required. Returns available 30-min time slots for the doctor on that date.
->
-> 4. `ReportsController.cs` (API):
->    - `GET /api/reports/appointment-stats?from={date}&to={date}` — JWT required, ClinicManager role only. Returns: total appointments, by status breakdown, by specialization breakdown.
->    - `GET /api/reports/doctor-utilization?from={date}&to={date}` — JWT required, ClinicManager role only. Returns: appointments per doctor, completion rate per doctor.
->    - `GET /api/reports/cancellation-rates?from={date}&to={date}` — JWT required, ClinicManager role only. Returns: cancellation count, missed count, rates over time.
->
-> Requirements:
-> - All endpoints return proper HTTP status codes (200, 400, 401, 403, 404)
-> - All data returned as JSON using response DTOs (not entity classes directly)
-> - Write all DTO classes in `ClinicAPI/DTOs/` folder
-> - Configure Swagger/OpenAPI so all endpoints are visible at `/swagger`
-> - JWT configuration reads from appsettings.json"
+### Step 26
+**Implement the Web API endpoints**
 
 - [ ] Create all controller and DTO files
 - [ ] Run `ClinicAPI` project (`F5`)
@@ -567,29 +361,8 @@ git push origin main
 
 ---
 
-### Step 28 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement the public appointment lookup page in `ClinicMVC`. Requirements:
->
-> 1. `LookupController.cs`:
->    - `Index()` GET — shows a search form with two fields: CPR Number and Patient Reference Number. No login required (`[AllowAnonymous]`).
->    - `Index(string cpr, string referenceNumber)` POST — calls `GET /api/appointments/lookup?cpr={cpr}&ref={referenceNumber}` using `HttpClient`. Displays results or an error message.
->
-> 2. `LookupService.cs` — registered as a typed HttpClient service in `Program.cs`. Base address points to the ClinicAPI URL (from appsettings). Calls the API and deserializes JSON response into view models.
->
-> 3. `Views/Lookup/Index.cshtml` — public page (no login link needed), shows:
->    - The search form
->    - If results found: upcoming appointments (doctor name, specialty, date/time, status) and last 3 visit summaries (date, diagnosis)
->    - If not found: friendly 'No records found' message
->    - If API error: friendly error message
->
-> 4. Add a link to this page in the `_Layout.cshtml` navbar as 'Check My Appointment' (visible to everyone including not logged in).
->
-> In `ClinicMVC/appsettings.json`, add:
-> `'ApiBaseUrl': 'https://localhost:{ClinicAPI port}'`
->
-> IMPORTANT: This is the ONLY feature in ClinicMVC that calls the API. All other features use EF Core directly."
+### Step 28
+**Implement the public appointment lookup page**
 
 - [ ] Create all files
 - [ ] Run both `ClinicAPI` and `ClinicMVC` simultaneously (right-click solution → Set Startup Projects → Multiple startup projects)
@@ -614,23 +387,8 @@ git push origin main
 
 ---
 
-### Step 30 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement SignalR real-time appointment tracking in the ClinicSystem. I need:
->
-> In `ClinicAPI`:
-> 1. `AppointmentHub.cs` in `ClinicAPI/Hubs/` — a SignalR Hub class. It should have a method `JoinWaitingRoom()` that adds the client to a group. Configure it in `Program.cs` at route `/hubs/appointment`.
-> 2. Inject `IHubContext<AppointmentHub>` into `AppointmentController` (the MVC one). In the `UpdateStatus` action, after every status change, call: `await _hubContext.Clients.All.SendAsync('AppointmentStatusUpdated', new { appointmentId, patientName, doctorName, newStatus, updatedAt })`
->
-> In `ClinicMVC`:
-> 3. Install `Microsoft.AspNetCore.SignalR.Client` NuGet package in ClinicMVC
-> 4. Create `Views/Receptionist/WaitingRoom.cshtml` — a live waiting room board showing today's appointments as cards. Each card shows: patient name, appointment time, doctor name, current status (color-coded). When a `AppointmentStatusUpdated` message is received via SignalR, update the relevant card's status badge without page refresh.
-> 5. Add the SignalR JavaScript client script to this view. The connection URL should point to `ClinicAPI`'s hub: `https://localhost:{APIport}/hubs/appointment`
-> 6. Add a 'Waiting Room' link in the Receptionist's navigation menu.
-> 7. Also wire up personal notifications: when a notification arrives for the current user via SignalR, play a subtle sound and update the bell badge count immediately.
->
-> Configure CORS in `ClinicAPI/Program.cs` to allow the MVC app's origin."
+### Step 30
+**Implement SignalR real-time appointment tracking**
 
 - [ ] Create all files, update Program.cs in both projects
 - [ ] Run both ClinicAPI and ClinicMVC simultaneously
@@ -655,35 +413,8 @@ git push origin main
 
 ---
 
-### Step 32 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Implement the Reporting Application (`ClinicReporting` project — ASP.NET Core MVC). This app has NO project reference to ClinicAPI and NO direct database access. All data comes through the API via HttpClient.
->
-> 1. `AuthController.cs`:
->    - `Login()` GET+POST — form with email+password. On POST, call `POST /api/auth/login` via HttpClient. If successful, store the JWT token in the session. Redirect to dashboard.
->    - `Logout()` — clear session, redirect to login.
->
-> 2. `ApiService.cs` — a typed HttpClient service that:
->    - Reads the JWT from the session on every request
->    - Attaches `Authorization: Bearer {token}` header
->    - Has methods: `GetAppointmentStatsAsync(DateTime from, DateTime to)`, `GetDoctorUtilizationAsync(DateTime from, DateTime to)`, `GetCancellationRatesAsync(DateTime from, DateTime to)`
->
-> 3. `ReportsController.cs`:
->    - `Dashboard()` — overview page with summary numbers (total appointments today, this week, this month)
->    - `AppointmentStats()` — date range filter form + a table and simple bar chart of appointments by status
->    - `DoctorUtilization()` — table showing each doctor's total appointments, completed, cancelled, completion rate
->    - `CancellationRates()` — table of cancellation and missed rates with date filter
->    - All actions check if JWT exists in session — redirect to login if not
->    - All report pages have a 'Date Range' filter (from/to date pickers)
->
-> 4. `_Layout.cshtml` for reporting app — clearly branded 'Clinic Manager — Reports', shows logged-in manager name, logout button, nav links to each report.
->
-> 5. In `ClinicReporting/appsettings.json` add: `'ApiBaseUrl': 'https://localhost:{ClinicAPI port}'`
->
-> 6. Configure session in `ClinicReporting/Program.cs`
->
-> IMPORTANT: This app is read-only. No create/update/delete. Only the Clinic Manager role should be able to log in (validate the role from the JWT claims)."
+### Step 32
+**Implement the Reporting Application**
 
 - [ ] Create all files
 - [ ] Run all three projects simultaneously
@@ -709,24 +440,8 @@ git push origin main
 
 ---
 
-### Step 34 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Review and improve the UI/UX of the ClinicMVC application. I need:
->
-> 1. A consistent Bootstrap 5 layout across all pages — use a clean, professional medical theme (white background, blue/teal primary color).
-> 2. Update `_Layout.cshtml` with a proper navbar, sidebar (for dashboards), and footer.
-> 3. Add Bootstrap badges with appropriate colors for appointment statuses:
->    - Requested = secondary, Confirmed = primary, CheckedIn = info, InProgress = warning, Completed = success, Cancelled = danger, Missed = dark
-> 4. Add DataTables.js to all list pages (appointments, patients, doctors) for client-side search, sort, and pagination.
-> 5. Add a date picker (Flatpickr or similar) to all date input fields.
-> 6. Add SweetAlert2 for confirmation dialogs before status changes (e.g., 'Are you sure you want to cancel this appointment?').
-> 7. Add a loading spinner on form submissions that make API calls.
-> 8. Make all pages responsive — test the layout at 768px width (tablet) and 375px (mobile).
-> 9. Add a 404 and 500 error page.
-> 10. Add `[ValidateAntiForgeryToken]` to all POST actions if not already there.
->
-> Give me updated `_Layout.cshtml`, a `site.css` customization file, and updated views for the main list and form pages."
+### Step 34
+**Review and improve the UI/UX**
 
 - [ ] Apply the UI updates
 - [ ] Test every page at different screen widths using browser DevTools (F12 → Toggle device toolbar)
@@ -735,18 +450,8 @@ git push origin main
 
 ---
 
-### Step 35 — `AI AGENT`
-**Prompt to give the AI:**
-
-> "Add server-side input validation and error handling to ClinicMVC. I need:
-> 1. All ViewModels should have complete `[Required]`, `[StringLength]`, `[Range]`, `[EmailAddress]`, `[DataType]` validation annotations.
-> 2. All POST controller actions should check `ModelState.IsValid` before processing.
-> 3. A global exception handling middleware in `Program.cs` that catches unhandled exceptions and shows the 500 error page.
-> 4. All database calls wrapped in try/catch with meaningful error messages via TempData.
-> 5. Authorization checks — if a user tries to access another user's appointment/record via URL manipulation, return 403 Forbidden.
-> 6. Verify all list pages have null-safe `.ToList()` calls (no NullReferenceException on empty data).
->
-> List all the files that need changes and what to change in each."
+### Step 35
+**Add server-side input validation and error handling**
 
 - [ ] Apply all validation and error handling changes
 - [ ] Test: submit empty forms → confirm validation messages appear
@@ -769,20 +474,8 @@ git push origin main
 
 ---
 
-### Step 37 — `AI AGENT`
-**Prompt to give the AI (choose 2–3 of these):**
-
-> "Add the following enhancements to the ClinicSystem to go beyond the baseline requirements. For each enhancement, give me the complete code and explain how to test it:
->
-> Enhancement 1 — Appointment Reminder Email Simulation: When an appointment is 24 hours away, display a banner on the Patient's dashboard: 'Reminder: You have an appointment tomorrow at [time] with Dr. [name]'. Check this on dashboard load using a LINQ query.
->
-> Enhancement 2 — Doctor Dashboard Calendar View: Instead of a plain list, show the Doctor's appointments for the week in a simple calendar grid (a 5-column table Mon–Fri with time slots). Use color coding by appointment status.
->
-> Enhancement 3 — Patient Search for Receptionist: Add a patient search bar on the Receptionist's 'Book Appointment' page. As the receptionist types a patient name or CPR, AJAX returns matching patients without page refresh. Uses `GET /api/patients/search?q={query}` endpoint.
->
-> Enhancement 4 — Appointment Export: Clinic Manager can export the appointments list as a CSV file. Add an 'Export CSV' button on the All Appointments page.
->
-> Enhancement 5 — Prescription Print View: A print-friendly prescription page at `/prescription/{id}/print` with clinic letterhead, patient details, doctor details, medication table, and doctor signature line. Uses `@media print` CSS."
+### Step 37
+**Implement bonus enhancements (choose 2–3)**
 
 - [ ] Implement chosen enhancements
 - [ ] Take a screenshot of each enhancement working for the project document
@@ -836,18 +529,10 @@ In the Azure Portal:
 
 ---
 
-### Step 41 — `AI AGENT`
-**Prompt to give the AI:**
+### Step 41
+**Configure production appsettings for Azure**
 
-> "I have created 3 Azure App Services and an Azure SQL Database for the ClinicSystem project. Give me:
->
-> 1. The complete `appsettings.Production.json` for `ClinicAPI` — replace the connection string with Azure SQL, update JWT settings for production.
-> 2. The complete `appsettings.Production.json` for `ClinicMVC` — update the ApiBaseUrl to point to the deployed `ClinicAPI` URL: `https://clinic-api.azurewebsites.net`
-> 3. The complete `appsettings.Production.json` for `ClinicReporting` — update ApiBaseUrl to `https://clinic-api.azurewebsites.net`
-> 4. Instructions for configuring the connection string as an Azure App Service Application Setting (so it does not get committed to Git).
-> 5. Step-by-step instructions to publish each project from Visual Studio using the 'Publish' wizard to Azure App Service."
-
-- [ ] Create the production appsettings files
+- [ ] Create the production appsettings files for all three projects
 - [ ] Add the Azure SQL connection string as an App Service Application Setting (via portal — not in the code file)
 
 ---
@@ -889,14 +574,12 @@ In Visual Studio:
 
 ---
 
-### Step 45 — `AI AGENT` (if SignalR does not work after deployment)
-**Prompt to give the AI:**
+### Step 45 (if SignalR does not work after deployment)
+**Fix SignalR on Azure**
 
-> "SignalR is not working after deploying to Azure App Service. The Free tier (F1) does not support WebSockets. Give me:
-> 1. Instructions to enable WebSockets on the Azure App Service (it is a setting in the portal — Configuration → General settings → WebSockets = On). Tell me exactly where to find it.
-> 2. If WebSockets cannot be enabled on Free tier, show me how to configure SignalR to fall back to Long Polling by adding `.WithUrl(..., options => { options.Transports = HttpTransportType.LongPolling; })` in the JavaScript client."
-
-- [ ] Apply the fix and re-test SignalR on the deployed app
+- [ ] Enable WebSockets on the Azure App Service: Portal → App Service → Configuration → General settings → WebSockets = On
+- [ ] If WebSockets cannot be enabled on Free tier, configure SignalR to fall back to Long Polling in the JavaScript client
+- [ ] Re-test SignalR on the deployed app
 
 ---
 
@@ -917,20 +600,13 @@ git push origin main
 
 ---
 
-### Step 47 — `AI AGENT`
-**Prompt to give the AI:**
+### Step 47
+**Prepare project documentation content**
 
-> "Generate the following content for my project document for IT8118 Brief A:
->
-> 1. A complete API Endpoints Summary Table (Markdown format) with columns: Route, HTTP Method, Purpose, Auth Required, Role Restriction — for all 9 API endpoints we implemented.
->
-> 2. A NuGet Packages List table with columns: Package Name, Project(s) Used In, Purpose — for all packages installed.
->
-> 3. A description of all database entities (for the ERD section): for each entity, list the key fields and briefly explain its role in the system.
->
-> 4. An Enhancements section description for the [enhancements you chose] — a paragraph per enhancement with what it does and why it adds value.
->
-> Format everything ready to paste into a Word document."
+- [ ] Prepare the API Endpoints Summary Table (Route, HTTP Method, Purpose, Auth Required, Role Restriction)
+- [ ] Prepare the NuGet Packages List (Package Name, Project, Purpose)
+- [ ] Prepare entity descriptions for the ERD section
+- [ ] Prepare Enhancements section description
 
 ---
 
@@ -938,7 +614,7 @@ git push origin main
 **Draw the ERD diagram**
 
 - [ ] Go to dbdiagram.io (free, online)
-- [ ] Use the entity descriptions from the AI to draw the ERD
+- [ ] Draw the ERD with all entities and relationships
 - [ ] Show all relationships (1-to-many, many-to-many) with cardinality notation
 - [ ] Export as PNG or PDF
 - [ ] Insert into the project document
@@ -949,7 +625,7 @@ git push origin main
 **Fill in the project document (using tutor template)**
 
 - [ ] Open the template provided by the tutor
-- [ ] Section: ERD → paste the diagram + entity descriptions from AI
+- [ ] Section: ERD → paste the diagram + entity descriptions
 - [ ] Section: Deployed URLs → paste the 3 Azure URLs
 - [ ] Section: Demo Credentials → fill in the table:
 
@@ -960,10 +636,10 @@ git push origin main
 | Receptionist | receptionist@clinic.com | Recept@123 |
 | Patient | patient1@clinic.com | Patient@123 |
 
-- [ ] Section: API Endpoints → paste table from AI
-- [ ] Section: NuGet Packages → paste table from AI
+- [ ] Section: API Endpoints → paste table
+- [ ] Section: NuGet Packages → paste table
 - [ ] Section: System Walkthrough → take screenshots of every major page per role
-- [ ] Section: Enhancements → paste from AI + add your screenshots
+- [ ] Section: Enhancements → paste + add your screenshots
 - [ ] Add the GitHub repository URL
 
 ---
@@ -1070,12 +746,12 @@ Prepare to explain (without notes):
 | 8 — Notifications | 24-25 | Member 2 | In-system notifications, bell badge, auto-refresh |
 | 9 — Web API | 26-27 | Member 1 | JWT Auth, reporting endpoints, DTOs, Swagger |
 | 10 — Lookup | 28-29 | Member 4 | Public lookup page via HttpClient |
-| 11 — Sig�31 | AI + Ali | Real-time waiting room and status board |
-| 12 — Reporting | 32–33 | AI + Ali | Reporting app with JWT, HttpClient, 3 report views |
-| 13 — Polish | 34–36 | AI + Ali | Bootstrap UI, DataTables, validation, error handling |
-| 14 — Enhancements | 37–38 | AI + Ali | Bonus features for 5% extra marks |
-| 15 — Azure | 39–46 | Ali (+ AI guidance) | Provision resources, deploy all 3 apps, seed Azure DB |
-| 16 — Docs | 47–50 | Ali (+ AI content) | ERD, project document, submit on portal |
+| 11 — SignalR | 30-31 | Member 4 | Real-time waiting room and status board |
+| 12 — Reporting | 32–33 | Member 4 | Reporting app with JWT, HttpClient, 3 report views |
+| 13 — Polish | 34–36 | Member 4 | Bootstrap UI, DataTables, validation, error handling |
+| 14 — Enhancements | 37–38 | Member 4 | Bonus features for 5% extra marks |
+| 15 — Azure | 39–46 | Member 4 | Provision resources, deploy all 3 apps, seed Azure DB |
+| 16 — Docs | 47–50 | Member 4 | ERD, project document, submit on portal |
 | 17 — Reflection | 51–55 | Ali ONLY | Contribution table, decisions, challenge, in-person |
 
 **Total steps: 55**  
