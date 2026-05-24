@@ -303,52 +303,9 @@ namespace ClinicMVC.Controllers
 
         public async Task<IActionResult> SchedulesIndex(int doctorId)
         {
-            var doctor = await _dbContext.Doctors
-                .Include(d => d.User)
-                .Include(d => d.Schedules)
-                .FirstOrDefaultAsync(d => d.Id == doctorId);
-
-            if (doctor == null)
+            var viewModel = await BuildScheduleViewModelAsync(doctorId);
+            if (viewModel == null)
                 return NotFound();
-
-            var schedules = doctor.Schedules.OrderBy(s => s.DayOfWeek).ToList();
-
-            // Ensure all weekdays (Mon-Fri) exist
-            for (int i = 0; i < 5; i++)
-            {
-                if (!schedules.Any(s => s.DayOfWeek == (DayOfWeek)i))
-                {
-                    var newSchedule = new DoctorSchedule
-                    {
-                        DoctorId = doctorId,
-                        DayOfWeek = (DayOfWeek)i,
-                        StartTime = new TimeSpan(9, 0, 0),
-                        EndTime = new TimeSpan(17, 0, 0)
-                    };
-                    _dbContext.DoctorSchedules.Add(newSchedule);
-                    schedules.Add(newSchedule);
-                }
-            }
-            await _dbContext.SaveChangesAsync();
-
-            schedules = schedules.OrderBy(s => s.DayOfWeek).ToList();
-
-            var viewModel = new ScheduleViewModel
-            {
-                DoctorId = doctorId,
-                DoctorName = $"{doctor.User?.FirstName} {doctor.User?.LastName}",
-                DaySchedules = schedules.Select(s => new DayScheduleViewModel
-                {
-                    Id = s.Id,
-                    DoctorId = s.DoctorId,
-                    DayOfWeek = s.DayOfWeek,
-                    DayName = GetDayName(s.DayOfWeek),
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    StartTimeString = s.StartTime.ToString(@"hh\:mm"),
-                    EndTimeString = s.EndTime.ToString(@"hh\:mm")
-                }).ToList()
-            };
 
             return View(viewModel);
         }
@@ -358,28 +315,67 @@ namespace ClinicMVC.Controllers
         public async Task<IActionResult> SchedulesEdit(int doctorId, List<DayScheduleViewModel> daySchedules)
         {
             if (daySchedules == null || !daySchedules.Any())
-                return BadRequest();
+            {
+                ModelState.AddModelError(string.Empty, "Schedule data is missing.");
+                var emptyVm = await BuildScheduleViewModelAsync(doctorId);
+                return emptyVm == null ? NotFound() : View("SchedulesIndex", emptyVm);
+            }
+
+            var parsedSchedules = new List<(DayScheduleViewModel Day, TimeSpan Start, TimeSpan End)>();
+            foreach (var daySchedule in daySchedules)
+            {
+                if (!TimeSpan.TryParse(daySchedule.StartTimeString, out var startTime) ||
+                    !TimeSpan.TryParse(daySchedule.EndTimeString, out var endTime))
+                {
+                    ModelState.AddModelError(string.Empty,
+                        $"{daySchedule.DayName}: enter valid start and end times.");
+                    continue;
+                }
+
+                if (endTime <= startTime)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        $"{daySchedule.DayName}: end time must be after start time.");
+                    continue;
+                }
+
+                parsedSchedules.Add((daySchedule, startTime, endTime));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var invalidVm = await BuildScheduleViewModelAsync(doctorId);
+                if (invalidVm == null)
+                    return NotFound();
+
+                foreach (var submitted in daySchedules)
+                {
+                    var match = invalidVm.DaySchedules.FirstOrDefault(d => d.Id == submitted.Id);
+                    if (match != null)
+                    {
+                        match.StartTimeString = submitted.StartTimeString;
+                        match.EndTimeString = submitted.EndTimeString;
+                    }
+                }
+
+                return View("SchedulesIndex", invalidVm);
+            }
 
             try
             {
-                foreach (var daySchedule in daySchedules)
+                foreach (var (daySchedule, startTime, endTime) in parsedSchedules)
                 {
-                    if (daySchedule.Id.HasValue)
-                    {
-                        var schedule = await _dbContext.DoctorSchedules
-                            .FirstOrDefaultAsync(s => s.Id == daySchedule.Id && s.DoctorId == doctorId);
+                    if (!daySchedule.Id.HasValue)
+                        continue;
 
-                        if (schedule != null)
-                        {
-                            // Parse times from string format
-                            if (TimeSpan.TryParse(daySchedule.StartTimeString, out var startTime) &&
-                                TimeSpan.TryParse(daySchedule.EndTimeString, out var endTime))
-                            {
-                                schedule.StartTime = startTime;
-                                schedule.EndTime = endTime;
-                                _dbContext.Update(schedule);
-                            }
-                        }
+                    var schedule = await _dbContext.DoctorSchedules
+                        .FirstOrDefaultAsync(s => s.Id == daySchedule.Id && s.DoctorId == doctorId);
+
+                    if (schedule != null)
+                    {
+                        schedule.StartTime = startTime;
+                        schedule.EndTime = endTime;
+                        _dbContext.Update(schedule);
                     }
                 }
 
@@ -409,59 +405,39 @@ namespace ClinicMVC.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                return RedirectToAction(nameof(SchedulesIndex), new { doctorId });
+                var errorVm = await BuildScheduleViewModelAsync(doctorId);
+                return errorVm == null ? NotFound() : View("SchedulesIndex", errorVm);
             }
         }
 
         public async Task<IActionResult> SchedulesLeave(int doctorId)
         {
-            var doctor = await _dbContext.Doctors
-                .Include(d => d.User)
-                .Include(d => d.Leaves)
-                .FirstOrDefaultAsync(d => d.Id == doctorId);
-
-            if (doctor == null)
-                return NotFound();
-
-            var viewModel = new LeaveViewModel
-            {
-                DoctorId = doctorId,
-                DoctorName = $"{doctor.User?.FirstName} {doctor.User?.LastName}",
-                Leaves = doctor.Leaves
-                    .OrderByDescending(l => l.StartDate)
-                    .Select(l => new DoctorLeaveItem
-                    {
-                        Id = l.Id,
-                        StartDate = l.StartDate,
-                        EndDate = l.EndDate,
-                        Reason = l.Reason,
-                        StartDateString = l.StartDate.ToString("yyyy-MM-dd"),
-                        EndDateString = l.EndDate.ToString("yyyy-MM-dd")
-                    }).ToList()
-            };
-
-            return View(viewModel);
+            var viewModel = await BuildLeaveViewModelAsync(doctorId);
+            return viewModel == null ? NotFound() : View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SchedulesLeaveCreate(int doctorId, string startDateString, string endDateString, string reason)
+        public async Task<IActionResult> SchedulesLeaveCreate(int doctorId, DoctorLeaveCreateViewModel leaveForm)
         {
-            if (string.IsNullOrEmpty(startDateString))
-                return BadRequest();
+            leaveForm.DoctorId = doctorId;
+
+            if (!ModelState.IsValid)
+                return await SchedulesLeaveViewResultAsync(doctorId, leaveForm);
 
             try
             {
-                if (!DateTime.TryParse(startDateString, out var startDate) ||
-                    !DateTime.TryParse(endDateString, out var endDate))
+                if (!DateTime.TryParse(leaveForm.StartDateString, out var startDate) ||
+                    !DateTime.TryParse(leaveForm.EndDateString, out var endDate))
                 {
-                    return BadRequest("Invalid date format");
+                    ModelState.AddModelError(string.Empty, "Enter valid start and end dates.");
+                    return await SchedulesLeaveViewResultAsync(doctorId, leaveForm);
                 }
 
                 if (startDate > endDate)
                 {
-                    ModelState.AddModelError(string.Empty, "End date must be after or equal to start date.");
-                    return RedirectToAction(nameof(SchedulesLeave), new { doctorId });
+                    ModelState.AddModelError(string.Empty, "End date must be on or after the start date.");
+                    return await SchedulesLeaveViewResultAsync(doctorId, leaveForm);
                 }
 
                 var leave = new DoctorLeave
@@ -469,7 +445,7 @@ namespace ClinicMVC.Controllers
                     DoctorId = doctorId,
                     StartDate = startDate,
                     EndDate = endDate,
-                    Reason = reason ?? ""
+                    Reason = leaveForm.Reason ?? ""
                 };
 
                 _dbContext.DoctorLeaves.Add(leave);
@@ -500,7 +476,7 @@ namespace ClinicMVC.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                return RedirectToAction(nameof(SchedulesLeave), new { doctorId });
+                return await SchedulesLeaveViewResultAsync(doctorId, leaveForm);
             }
         }
 
@@ -554,7 +530,11 @@ namespace ClinicMVC.Controllers
         public async Task<IActionResult> SpecializationsCreate(SpecializationViewModel model)
         {
             if (!ModelState.IsValid)
+            {
+                TempData["Error"] = string.Join(" ",
+                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 return RedirectToAction(nameof(Specializations));
+            }
 
             var duplicate = await _dbContext.Specializations
                 .AnyAsync(s => s.Name.ToLower() == model.Name.ToLower());
@@ -581,7 +561,11 @@ namespace ClinicMVC.Controllers
         public async Task<IActionResult> SpecializationsEdit(SpecializationViewModel model)
         {
             if (!ModelState.IsValid)
+            {
+                TempData["Error"] = string.Join(" ",
+                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 return RedirectToAction(nameof(Specializations));
+            }
 
             var spec = await _dbContext.Specializations.FindAsync(model.Id);
             if (spec == null)
@@ -631,6 +615,90 @@ namespace ClinicMVC.Controllers
         // ??????????????????????????????????????????????????????????
         // Helper Methods
         // ??????????????????????????????????????????????????????????
+
+        private async Task<ScheduleViewModel?> BuildScheduleViewModelAsync(int doctorId)
+        {
+            var doctor = await _dbContext.Doctors
+                .Include(d => d.User)
+                .Include(d => d.Schedules)
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+            if (doctor == null)
+                return null;
+
+            var schedules = doctor.Schedules.OrderBy(s => s.DayOfWeek).ToList();
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (!schedules.Any(s => s.DayOfWeek == (DayOfWeek)i))
+                {
+                    var newSchedule = new DoctorSchedule
+                    {
+                        DoctorId = doctorId,
+                        DayOfWeek = (DayOfWeek)i,
+                        StartTime = new TimeSpan(9, 0, 0),
+                        EndTime = new TimeSpan(17, 0, 0)
+                    };
+                    _dbContext.DoctorSchedules.Add(newSchedule);
+                    schedules.Add(newSchedule);
+                }
+            }
+
+            await _dbContext.SaveChangesAsync();
+            schedules = schedules.OrderBy(s => s.DayOfWeek).ToList();
+
+            return new ScheduleViewModel
+            {
+                DoctorId = doctorId,
+                DoctorName = $"{doctor.User?.FirstName} {doctor.User?.LastName}",
+                DaySchedules = schedules.Select(s => new DayScheduleViewModel
+                {
+                    Id = s.Id,
+                    DoctorId = s.DoctorId,
+                    DayOfWeek = s.DayOfWeek,
+                    DayName = GetDayName(s.DayOfWeek),
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    StartTimeString = s.StartTime.ToString(@"hh\:mm"),
+                    EndTimeString = s.EndTime.ToString(@"hh\:mm")
+                }).ToList()
+            };
+        }
+
+        private async Task<LeaveViewModel?> BuildLeaveViewModelAsync(int doctorId, DoctorLeaveCreateViewModel? leaveForm = null)
+        {
+            var doctor = await _dbContext.Doctors
+                .Include(d => d.User)
+                .Include(d => d.Leaves)
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+            if (doctor == null)
+                return null;
+
+            return new LeaveViewModel
+            {
+                DoctorId = doctorId,
+                DoctorName = $"{doctor.User?.FirstName} {doctor.User?.LastName}",
+                LeaveForm = leaveForm ?? new DoctorLeaveCreateViewModel { DoctorId = doctorId },
+                Leaves = doctor.Leaves
+                    .OrderByDescending(l => l.StartDate)
+                    .Select(l => new DoctorLeaveItem
+                    {
+                        Id = l.Id,
+                        StartDate = l.StartDate,
+                        EndDate = l.EndDate,
+                        Reason = l.Reason,
+                        StartDateString = l.StartDate.ToString("yyyy-MM-dd"),
+                        EndDateString = l.EndDate.ToString("yyyy-MM-dd")
+                    }).ToList()
+            };
+        }
+
+        private async Task<IActionResult> SchedulesLeaveViewResultAsync(int doctorId, DoctorLeaveCreateViewModel leaveForm)
+        {
+            var viewModel = await BuildLeaveViewModelAsync(doctorId, leaveForm);
+            return viewModel == null ? NotFound() : View("SchedulesLeave", viewModel);
+        }
 
         private string GetDayName(DayOfWeek day)
         {

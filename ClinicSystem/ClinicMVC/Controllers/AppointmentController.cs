@@ -50,33 +50,7 @@ namespace ClinicMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Book()
         {
-            var specs = await _db.Specializations.OrderBy(s => s.Name).ToListAsync();
-
-            var vm = new AppointmentBookViewModel
-            {
-                Specializations = specs
-                    .Select(s => new SelectListItem(s.Name, s.Id.ToString()))
-                    .ToList()
-            };
-
-            if (User.IsInRole("Receptionist"))
-            {
-                var patientUsers = await _userManager.GetUsersInRoleAsync("Patient");
-                var patientIds = patientUsers.Select(u => u.Id).ToList();
-                var patients = await _db.Patients
-                    .Where(p => patientIds.Contains(p.UserId))
-                    .Include(p => p.User)
-                    .OrderBy(p => p.User!.LastName)
-                    .ToListAsync();
-
-                vm.Patients = patients
-                    .Select(p => new SelectListItem(
-                        $"{p.User!.FirstName} {p.User.LastName} ({p.CPRNumber})",
-                        p.Id.ToString()))
-                    .ToList();
-            }
-
-            return View(vm);
+            return View(await BuildBookViewModelAsync());
         }
 
         // Step 2: Show doctors for the selected specialization
@@ -86,12 +60,12 @@ namespace ClinicMVC.Controllers
         public async Task<IActionResult> SelectDoctor(AppointmentBookViewModel input)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction(nameof(Book));
+                return View(nameof(Book), await BuildBookViewModelAsync(input));
 
             if (User.IsInRole("Receptionist") && (input.PatientId == null || input.PatientId == 0))
             {
-                TempData["Error"] = "Please select a patient.";
-                return RedirectToAction(nameof(Book));
+                ModelState.AddModelError(nameof(input.PatientId), "Please select a patient.");
+                return View(nameof(Book), await BuildBookViewModelAsync(input));
             }
 
             var spec = await _db.Specializations.FindAsync(input.SpecializationId);
@@ -137,6 +111,9 @@ namespace ClinicMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SelectSlot(AppointmentSelectDoctorViewModel input)
         {
+            if (!ModelState.IsValid)
+                return await ReturnSelectDoctorViewAsync(input.SpecializationId, input.PatientId);
+
             var doctor = await _db.Doctors
                 .Include(d => d.User)
                 .FirstOrDefaultAsync(d => d.Id == input.SelectedDoctorId);
@@ -224,6 +201,16 @@ namespace ClinicMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Confirm(AppointmentSelectSlotViewModel input)
         {
+            if (!ModelState.IsValid)
+            {
+                input.AvailableSlots = await _availability.GetAvailableSlotsAsync(input.DoctorId, input.Date);
+                var docInvalid = await _db.Doctors.Include(d => d.User).FirstOrDefaultAsync(d => d.Id == input.DoctorId);
+                input.DoctorName = docInvalid != null ? $"Dr. {docInvalid.User?.FirstName} {docInvalid.User?.LastName}" : "";
+                var specInvalid = await _db.Specializations.FindAsync(input.SpecializationId);
+                input.SpecializationName = specInvalid?.Name ?? "";
+                return View("SelectSlot", input);
+            }
+
             if (string.IsNullOrEmpty(input.SelectedSlot))
             {
                 // Re-load slots and return to slot selection
@@ -671,6 +658,80 @@ namespace ClinicMVC.Controllers
                 DoctorName = $"Dr. {appointment.Doctor?.User?.FirstName} {appointment.Doctor?.User?.LastName}",
                 SpecializationName = appointment.Specialization?.Name ?? string.Empty
             });
+        }
+
+        private async Task<AppointmentBookViewModel> BuildBookViewModelAsync(AppointmentBookViewModel? input = null)
+        {
+            var specs = await _db.Specializations.OrderBy(s => s.Name).ToListAsync();
+
+            var vm = new AppointmentBookViewModel
+            {
+                SpecializationId = input?.SpecializationId ?? 0,
+                PatientId = input?.PatientId,
+                Specializations = specs
+                    .Select(s => new SelectListItem(s.Name, s.Id.ToString()))
+                    .ToList()
+            };
+
+            if (User.IsInRole("Receptionist"))
+            {
+                var patientUsers = await _userManager.GetUsersInRoleAsync("Patient");
+                var patientIds = patientUsers.Select(u => u.Id).ToList();
+                var patients = await _db.Patients
+                    .Where(p => patientIds.Contains(p.UserId))
+                    .Include(p => p.User)
+                    .OrderBy(p => p.User!.LastName)
+                    .ToListAsync();
+
+                vm.Patients = patients
+                    .Select(p => new SelectListItem(
+                        $"{p.User!.FirstName} {p.User.LastName} ({p.CPRNumber})",
+                        p.Id.ToString(),
+                        input?.PatientId == p.Id))
+                    .ToList();
+            }
+
+            return vm;
+        }
+
+        private async Task<IActionResult> ReturnSelectDoctorViewAsync(int specializationId, int? patientId)
+        {
+            var spec = await _db.Specializations.FindAsync(specializationId);
+            if (spec == null)
+                return RedirectToAction(nameof(Book));
+
+            var doctors = await _db.Doctors
+                .Include(d => d.User)
+                .Include(d => d.Specializations)
+                    .ThenInclude(ds => ds.Specialization)
+                .Where(d => d.Specializations.Any(ds => ds.SpecializationId == specializationId))
+                .ToListAsync();
+
+            var doctorOptions = new List<DoctorOption>();
+            foreach (var doc in doctors)
+            {
+                var nextDate = await _availability.GetNextAvailableDateAsync(doc.Id);
+                doctorOptions.Add(new DoctorOption
+                {
+                    Id = doc.Id,
+                    FullName = $"Dr. {doc.User?.FirstName} {doc.User?.LastName}",
+                    Bio = doc.Bio,
+                    SpecializationNames = doc.Specializations
+                        .Select(ds => ds.Specialization?.Name ?? "")
+                        .ToList(),
+                    NextAvailableDate = nextDate
+                });
+            }
+
+            var vm = new AppointmentSelectDoctorViewModel
+            {
+                SpecializationId = specializationId,
+                SpecializationName = spec.Name,
+                PatientId = patientId,
+                Doctors = doctorOptions
+            };
+
+            return View("SelectDoctor", vm);
         }
 
         private async Task SendStatusNotificationAsync(

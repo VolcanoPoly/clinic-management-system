@@ -6,6 +6,7 @@ namespace ClinicMVC.Models.ViewModels
         public string DoctorName { get; set; } = string.Empty;
         public List<DoctorLeaveItem> Leaves { get; set; } = new List<DoctorLeaveItem>();
         public DoctorLeaveItem NewLeave { get; set; } = new DoctorLeaveItem();
+        public DoctorLeaveCreateViewModel LeaveForm { get; set; } = new DoctorLeaveCreateViewModel();
     }
 
     public class DoctorLeaveItem

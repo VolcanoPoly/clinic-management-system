@@ -7,6 +7,7 @@
 using ClinicAPI.Data;
 using ClinicAPI.Models;
 using ClinicMVC.Models.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -163,6 +164,7 @@ namespace ClinicMVC.Controllers
 
         public IActionResult AccessDenied()
         {
+            Response.StatusCode = StatusCodes.Status403Forbidden;
             return View();
         }
     }
