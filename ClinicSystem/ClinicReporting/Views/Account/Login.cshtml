@@ -1,0 +1,47 @@
+@model ClinicReporting.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Manager Login";
+    ViewData["AuthPage"] = true;
+}
+
+<div class="auth-page">
+    <div class="auth-card shadow-lg rounded-4 p-5">
+        <div class="text-center mb-4">
+            <img src="~/images/logo.svg" alt="MedCenter" style="width:60px;height:60px;" />
+            <h1 class="h4 mt-3">Manager Login</h1>
+            <p class="text-muted">Sign in with your clinic manager account to access reports.</p>
+        </div>
+
+        <form asp-action="Login" method="post" class="needs-validation" novalidate>
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="alert alert-danger d-none"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="manager@clinic.com" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" type="password" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <input asp-for="ReturnUrl" type="hidden" />
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Sign in</button>
+            </div>
+        </form>
+
+        <div class="mt-4 text-center text-muted small">
+            Use <strong>manager@clinic.com</strong> to access the reporting portal.
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-bB2Yj2gKBSnT6YzGQZ2wrc8w7QWO3V7HlqovFnt7N6ejTVR8MiHkMZ0jUy9GKobpKxJs0TR5acO/oUrPdgUMV0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js" integrity="sha512-5ZaIVitkxQlLwF2UrI66/cIvkq2f2hqlHuVaQqEUQb+U0zGATpDHWf9dQWbrfXVo0U0mZPrE6z1vUmOy6q5j+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+}

@@ -364,18 +364,23 @@ namespace ClinicMVC.Controllers
             return View(MapToListItems(appointments));
         }
 
-        // Receptionist: view today's appointments
+        // Receptionist: view appointments for a selected date (default = today)
         [Authorize(Roles = "Receptionist")]
-        public async Task<IActionResult> TodaysAppointments()
+        public async Task<IActionResult> TodaysAppointments(DateTime? date)
         {
-            var today = DateTime.Today;
+            var day = date?.Date ?? DateTime.Today;
             var appointments = await _db.Appointments
-                .Where(a => a.AppointmentDateTime.Date == today)
+                .Where(a => a.AppointmentDateTime.Date == day)
                 .Include(a => a.Patient).ThenInclude(p => p!.User)
                 .Include(a => a.Doctor).ThenInclude(d => d!.User)
                 .Include(a => a.Specialization)
                 .OrderBy(a => a.AppointmentDateTime)
                 .ToListAsync();
+
+            ViewBag.SelectedDate = day.ToString("yyyy-MM-dd");
+            ViewBag.DisplayDate = day.ToString("dddd, dd MMMM yyyy");
+            ViewBag.PrevDate = day.AddDays(-1).ToString("yyyy-MM-dd");
+            ViewBag.NextDate = day.AddDays(1).ToString("yyyy-MM-dd");
 
             return View(MapToListItems(appointments));
         }

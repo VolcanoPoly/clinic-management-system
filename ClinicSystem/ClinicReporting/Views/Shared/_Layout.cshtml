@@ -30,6 +30,48 @@
                                     <i class="fa-solid fa-house me-1"></i> Home
                                 </a>
                             </li>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reports" asp-action="Index">
+                                        <i class="fa-solid fa-chart-line me-1"></i> Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reports" asp-action="AppointmentStats">
+                                        Appointment Stats
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reports" asp-action="DoctorUtilization">
+                                        Doctor Utilization
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reports" asp-action="CancellationRates">
+                                        Cancellation Rates
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                        <ul class="navbar-nav ms-auto">
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <li class="nav-item">
+                                    <span class="navbar-text me-3 text-white-50">
+                                        <i class="fa-solid fa-user-tie me-1"></i> @User.Identity.Name
+                                    </span>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>

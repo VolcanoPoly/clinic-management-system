@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Reporting Dashboard";
+}
+
+<div class="my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">Reporting Dashboard</h1>
+            <p class="text-muted">Access appointment analytics, doctor utilization, and cancellation trends.</p>
+        </div>
+        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="card-title mb-3">
+                        <i class="fa-solid fa-calendar-check fa-lg text-primary me-2"></i>
+                        Appointment Statistics
+                    </div>
+                    <p class="text-muted">View total appointments, status breakdowns, and specialization demand.</p>
+                    <a asp-action="AppointmentStats" class="btn btn-primary">Open report</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="card-title mb-3">
+                        <i class="fa-solid fa-user-doctor fa-lg text-success me-2"></i>
+                        Doctor Utilization
+                    </div>
+                    <p class="text-muted">See doctor appointment counts, completion rates, and specialization metrics.</p>
+                    <a asp-action="DoctorUtilization" class="btn btn-primary">Open report</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="card-title mb-3">
+                        <i class="fa-solid fa-circle-xmark fa-lg text-danger me-2"></i>
+                        Cancellation Rates
+                    </div>
+                    <p class="text-muted">Track cancellations and missed appointment rates over time.</p>
+                    <a asp-action="CancellationRates" class="btn btn-primary">Open report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

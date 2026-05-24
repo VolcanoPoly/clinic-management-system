@@ -1,0 +1,89 @@
+@model ClinicReporting.Models.CancellationRatesViewModel
+@{
+    ViewData["Title"] = "Cancellation Rates";
+}
+
+<div class="my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">Cancellation Rates</h1>
+            <p class="text-muted">Monitor cancellations and missed appointment trends over time.</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary me-2">Back to dashboard</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary">Logout</a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <label class="form-label">From</label>
+            <input name="from" type="date" class="form-control" value="@Model.From.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">To</label>
+            <input name="to" type="date" class="form-control" value="@Model.To.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-2 d-grid align-self-end">
+            <button type="submit" class="btn btn-primary">Refresh</button>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    else
+    {
+        <div class="row gy-3 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4">
+                    <h5>Total cancellations</h5>
+                    <p class="display-6 mb-0">@Model.TotalCancellations</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4">
+                    <h5>Total missed</h5>
+                    <p class="display-6 mb-0">@Model.TotalMissed</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4">
+                    <h5>Cancellation rate</h5>
+                    <p class="display-6 mb-0">@Model.OverallCancellationRate.ToString("0.##") %</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4">
+                    <h5>Missed rate</h5>
+                    <p class="display-6 mb-0">@Model.OverallMissedRate.ToString("0.##") %</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Cancellations</th>
+                        <th>Missed</th>
+                        <th>Combined rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.DailyData)
+                    {
+                        <tr>
+                            <td>@row.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@row.CancellationCount</td>
+                            <td>@row.MissedCount</td>
+                            <td>@row.CancellationRate.ToString("0.##") %</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

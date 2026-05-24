@@ -1,0 +1,62 @@
+@model ClinicReporting.Models.DoctorUtilizationViewModel
+@{
+    ViewData["Title"] = "Doctor Utilization";
+}
+
+<div class="my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">Doctor Utilization</h1>
+            <p class="text-muted">Review doctor appointment counts and completion performance.</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary me-2">Back to dashboard</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary">Logout</a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <label class="form-label">From</label>
+            <input name="from" type="date" class="form-control" value="@Model.From.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">To</label>
+            <input name="to" type="date" class="form-control" value="@Model.To.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-2 d-grid align-self-end">
+            <button type="submit" class="btn btn-primary">Refresh</button>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Specialization</th>
+                        <th>Appointments</th>
+                        <th>Completion rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var metric in Model.DoctorMetrics)
+                    {
+                        <tr>
+                            <td>@metric.DoctorName</td>
+                            <td>@metric.Specialization</td>
+                            <td>@metric.AppointmentCount</td>
+                            <td>@metric.CompletionRate.ToString("0.##") %</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

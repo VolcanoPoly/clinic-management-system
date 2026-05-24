@@ -24,6 +24,19 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = ".ClinicReporting.Session";
 });
 
+// ── Authentication & authorization ─────────────────────────────────────────
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.Cookie.Name = ".ClinicReporting.Auth";
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddAuthorization();
+
 // ── MVC with Views ──────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
 
