@@ -27,6 +27,7 @@
     }
     else
     {
+        <div id="waiting-room-message" class="alert alert-success d-none"></div>
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
@@ -42,12 +43,12 @@
                 <tbody>
                     @foreach (var a in Model.OrderBy(x => x.AppointmentDateTime))
                     {
-                        <tr>
+                        <tr data-appointment-id="@a.Id">
                             <td><strong>@a.AppointmentDateTime.ToString("hh:mm tt")</strong></td>
                             <td>@a.PatientName</td>
                             <td>@a.DoctorName</td>
                             <td>@a.SpecializationName</td>
-                            <td>@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td class="status-cell" data-appointment-id="@a.Id">@Html.Partial("_StatusBadge", a.Status)</td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary">Manage</a>
                             </td>
@@ -58,3 +59,8 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/%40microsoft/signalr@7.0.12/dist/browser/signalr.min.js"></script>
+    <script src="~/js/appointment-waitingroom.js" asp-append-version="true"></script>
+}

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
+using ClinicMVC.Hubs;
 using ClinicMVC.Services;
 
 var currentDir = Directory.GetCurrentDirectory();
@@ -59,6 +60,9 @@ builder.Services.AddHttpClient("ClinicApiClient", client =>
 // ── Application Services ────────────────────────────────────────────────────
 builder.Services.AddScoped<AvailabilityService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// ── SignalR for live waiting room updates ──────────────────────────────────
+builder.Services.AddSignalR();
 
 // ── MVC with Views ─────────────────────────────────────────────────────────-
 builder.Services.AddControllersWithViews();
@@ -138,6 +142,8 @@ app.Use(async (context, next) =>
 
 app.UseAuthentication();  // Must come before UseAuthorization
 app.UseAuthorization();
+
+app.MapHub<AppointmentHub>("/hubs/appointment");
 
 app.MapControllerRoute(
     name: "default",

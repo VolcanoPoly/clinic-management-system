@@ -6,12 +6,14 @@
  */
 using ClinicAPI.Data;
 using ClinicAPI.Models;
+using ClinicMVC.Hubs;
 using ClinicMVC.Models.ViewModels;
 using ClinicMVC.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicMVC.Controllers
@@ -23,17 +25,20 @@ namespace ClinicMVC.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AvailabilityService _availability;
         private readonly INotificationService _notifications;
+        private readonly IHubContext<AppointmentHub> _appointmentHub;
 
         public AppointmentController(
             ApplicationDbContext db,
             UserManager<ApplicationUser> userManager,
             AvailabilityService availability,
-            INotificationService notifications)
+            INotificationService notifications,
+            IHubContext<AppointmentHub> appointmentHub)
         {
             _db = db;
             _userManager = userManager;
             _availability = availability;
             _notifications = notifications;
+            _appointmentHub = appointmentHub;
         }
 
         // ──────────────────────────────────────────────────────────────────────
@@ -501,6 +506,7 @@ namespace ClinicMVC.Controllers
             var appointment = await _db.Appointments
                 .Include(a => a.Patient).ThenInclude(p => p!.User)
                 .Include(a => a.Doctor).ThenInclude(d => d!.User)
+                .Include(a => a.Specialization)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null) return NotFound();
@@ -533,6 +539,7 @@ namespace ClinicMVC.Controllers
             await SendStatusNotificationAsync(appointment, oldStatus, newStatus, user);
 
             await _db.SaveChangesAsync();
+            await BroadcastWaitingRoomUpdateAsync(appointment);
 
             TempData["Success"] = $"Appointment status updated to {newStatus}.";
 
@@ -554,6 +561,8 @@ namespace ClinicMVC.Controllers
 
             var appointment = await _db.Appointments
                 .Include(a => a.Doctor).ThenInclude(d => d!.User)
+                .Include(a => a.Patient).ThenInclude(p => p!.User)
+                .Include(a => a.Specialization)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null) return NotFound();
@@ -592,6 +601,7 @@ namespace ClinicMVC.Controllers
             }
 
             await _db.SaveChangesAsync();
+            await BroadcastWaitingRoomUpdateAsync(appointment);
 
             TempData["Success"] = "Your appointment has been cancelled.";
             return RedirectToAction(nameof(MyAppointments));
@@ -643,6 +653,19 @@ namespace ClinicMVC.Controllers
             }
 
             return transitions;
+        }
+
+        private async Task BroadcastWaitingRoomUpdateAsync(Appointment appointment)
+        {
+            await _appointmentHub.Clients.Group("WaitingRoom").SendAsync("AppointmentStatusChanged", new
+            {
+                appointment.Id,
+                Status = appointment.Status.ToString(),
+                appointment.AppointmentDateTime,
+                PatientName = $"{appointment.Patient?.User?.FirstName} {appointment.Patient?.User?.LastName}",
+                DoctorName = $"Dr. {appointment.Doctor?.User?.FirstName} {appointment.Doctor?.User?.LastName}",
+                SpecializationName = appointment.Specialization?.Name ?? string.Empty
+            });
         }
 
         private async Task SendStatusNotificationAsync(
