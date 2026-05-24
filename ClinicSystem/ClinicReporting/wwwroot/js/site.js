@@ -1,4 +1,21 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿(function () {
+    'use strict';
 
-// Write your JavaScript code.
+    document.querySelectorAll('.needs-validation').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    });
+
+    document.querySelectorAll('[asp-validation-summary], .validation-summary-errors').forEach(function (summary) {
+        var hasContent = summary.querySelector('li, ul li') || summary.textContent.trim().length > 0;
+        if (hasContent) {
+            summary.classList.remove('d-none');
+            summary.style.display = '';
+        }
+    });
+})();

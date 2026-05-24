@@ -29,7 +29,7 @@
                 </div>
             }
 
-            <form method="post" class="needs-validation">
+            <form method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="UserId" />
@@ -99,8 +99,3 @@
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

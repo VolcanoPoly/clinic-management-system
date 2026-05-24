@@ -24,7 +24,7 @@
         <div class="alert alert-danger">@TempData["Error"]</div>
     }
 
-    <form asp-action="Confirm" method="post">
+    <form asp-action="Confirm" method="post" id="appointment-slot-form" class="needs-validation" novalidate>
         @Html.AntiForgeryToken()
         <input type="hidden" name="SpecializationId" value="@Model.SpecializationId" />
         <input type="hidden" name="SpecializationName" value="@Model.SpecializationName" />
@@ -65,8 +65,8 @@
                         </div>
                     }
                 </div>
-                <input type="hidden" name="SelectedSlot" id="selectedSlotHidden" value="@Model.SelectedSlot" />
                 <span asp-validation-for="SelectedSlot" class="text-danger small"></span>
+                <div id="slotValidationFeedback" class="text-danger small d-none" role="alert"></div>
             </div>
         </div>
 

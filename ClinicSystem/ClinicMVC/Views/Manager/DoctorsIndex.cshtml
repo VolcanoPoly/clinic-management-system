@@ -56,7 +56,8 @@
                                 </a>
                                 <form method="post" asp-action="DoctorsDelete" asp-route-id="@doctor.Id" style="display:inline;">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            data-confirm="Delete this doctor? This cannot be undone.">
                                         <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>

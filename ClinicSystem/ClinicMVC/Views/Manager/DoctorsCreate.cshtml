@@ -29,7 +29,7 @@
                 </div>
             }
 
-            <form method="post" class="needs-validation">
+            <form method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
 
                 <div class="row">
@@ -95,8 +95,3 @@
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
