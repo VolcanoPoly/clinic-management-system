@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ClinicAPI.Data;
 using ClinicAPI.Models;
 using ClinicMVC.Models.ViewModels;
+using ClinicMVC.Services;
 
 namespace ClinicMVC.Controllers
 {
@@ -13,11 +14,16 @@ namespace ClinicMVC.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly INotificationService _notifications;
 
-        public ManagerController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        public ManagerController(
+            ApplicationDbContext dbContext,
+            UserManager<ApplicationUser> userManager,
+            INotificationService notifications)
         {
             _dbContext = dbContext;
             _userManager = userManager;
+            _notifications = notifications;
         }
 
         public IActionResult Dashboard()
@@ -378,6 +384,26 @@ namespace ClinicMVC.Controllers
                 }
 
                 await _dbContext.SaveChangesAsync();
+
+                // Notify patients with upcoming appointments for this doctor
+                var activeStatuses = new[] { AppointmentStatus.Requested, AppointmentStatus.Confirmed, AppointmentStatus.CheckedIn };
+                var affectedAppointments = await _dbContext.Appointments
+                    .Include(a => a.Patient).ThenInclude(p => p.User)
+                    .Include(a => a.Doctor).ThenInclude(d => d.User)
+                    .Where(a => a.DoctorId == doctorId
+                        && activeStatuses.Contains(a.Status)
+                        && a.AppointmentDateTime >= DateTime.Now)
+                    .ToListAsync();
+
+                foreach (var appt in affectedAppointments)
+                {
+                    if (appt.Patient?.User?.Id != null)
+                        await _notifications.SendNotificationAsync(
+                            appt.Patient.User.Id,
+                            $"The schedule for your doctor has been updated. Please check your appointment on {appt.AppointmentDateTime:dd MMM yyyy} is still valid.",
+                            appt.Id);
+                }
+
                 return RedirectToAction(nameof(SchedulesIndex), new { doctorId });
             }
             catch (Exception ex)
@@ -448,6 +474,26 @@ namespace ClinicMVC.Controllers
 
                 _dbContext.DoctorLeaves.Add(leave);
                 await _dbContext.SaveChangesAsync();
+
+                // Notify patients whose appointments fall within the leave period
+                var activeStatuses = new[] { AppointmentStatus.Requested, AppointmentStatus.Confirmed, AppointmentStatus.CheckedIn };
+                var affectedAppointments = await _dbContext.Appointments
+                    .Include(a => a.Patient).ThenInclude(p => p.User)
+                    .Include(a => a.Doctor).ThenInclude(d => d.User)
+                    .Where(a => a.DoctorId == doctorId
+                        && activeStatuses.Contains(a.Status)
+                        && a.AppointmentDateTime.Date >= startDate.Date
+                        && a.AppointmentDateTime.Date <= endDate.Date)
+                    .ToListAsync();
+
+                foreach (var appt in affectedAppointments)
+                {
+                    if (appt.Patient?.User?.Id != null)
+                        await _notifications.SendNotificationAsync(
+                            appt.Patient.User.Id,
+                            $"Your doctor is on leave from {startDate:dd MMM yyyy} to {endDate:dd MMM yyyy}. Your appointment on {appt.AppointmentDateTime:dd MMM yyyy} may be affected. Please contact the clinic.",
+                            appt.Id);
+                }
 
                 return RedirectToAction(nameof(SchedulesLeave), new { doctorId });
             }

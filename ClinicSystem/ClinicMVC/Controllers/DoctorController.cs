@@ -458,6 +458,41 @@ namespace ClinicMVC.Controllers
             return View("~/Views/Doctor/Prescriptions/ViewPrescription.cshtml", viewModel);
         }
 
+        public async Task<IActionResult> PrintPrescription(int id)
+        {
+            var prescription = await _dbContext.Prescriptions
+                .Include(p => p.VisitRecord)
+                    .ThenInclude(v => v.Appointment)
+                        .ThenInclude(a => a.Patient)
+                            .ThenInclude(p => p.User)
+                .Include(p => p.Doctor)
+                    .ThenInclude(d => d.User)
+                .Include(p => p.Items)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (prescription == null)
+                return NotFound();
+
+            var viewModel = new PrescriptionViewModel
+            {
+                Id            = prescription.Id,
+                VisitRecordId = prescription.VisitRecordId,
+                DoctorName    = $"{prescription.Doctor?.User?.FirstName} {prescription.Doctor?.User?.LastName}",
+                IssuedAt      = prescription.IssuedAt,
+                Items         = prescription.Items.Select(i => new PrescriptionItemViewModel
+                {
+                    Id             = i.Id,
+                    MedicationName = i.MedicationName,
+                    Dosage         = i.Dosage,
+                    Frequency      = i.Frequency,
+                    Duration       = i.Duration,
+                    Instructions   = i.Instructions
+                }).ToList()
+            };
+
+            return View("~/Views/Doctor/Prescriptions/PrintPrescription.cshtml", viewModel);
+        }
+
         public async Task<IActionResult> EditPrescription(int id)
         {
             var prescription = await _dbContext.Prescriptions
