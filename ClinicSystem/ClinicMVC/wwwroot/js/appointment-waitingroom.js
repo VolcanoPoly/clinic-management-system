@@ -47,16 +47,37 @@
         showRefreshAlert(`Appointment at ${new Date(appointment.appointmentDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} updated to ${appointment.status}.`);
     }
 
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/appointment")
-        .withAutomaticReconnect()
-        .build();
+    function loadSignalR() {
+        return new Promise((resolve, reject) => {
+            if (window.signalR) {
+                return resolve();
+            }
 
-    connection.on("AppointmentStatusChanged", updateAppointmentRow);
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@microsoft/signalr@7.0.12/dist/browser/signalr.min.js';
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load SignalR script.'));
+            document.head.appendChild(script);
+        });
+    }
 
-    connection.start()
-        .then(() => connection.invoke("JoinWaitingRoom"))
+    loadSignalR()
+        .then(() => {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/appointment')
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('AppointmentStatusChanged', updateAppointmentRow);
+
+            connection.start()
+                .then(() => connection.invoke('JoinWaitingRoom'))
+                .catch(error => {
+                    console.error('SignalR connection failed:', error);
+                });
+        })
         .catch(error => {
-            console.error("SignalR connection failed:", error);
+            console.error('Could not load SignalR script:', error);
         });
 })();
