@@ -14,7 +14,7 @@
 
         <form asp-action="Login" method="post" class="needs-validation" novalidate>
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="All" class="alert alert-danger d-none"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
             <div class="mb-3">
                 <label asp-for="Email" class="form-label"></label>
@@ -40,8 +40,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-bB2Yj2gKBSnT6YzGQZ2wrc8w7QWO3V7HlqovFnt7N6ejTVR8MiHkMZ0jUy9GKobpKxJs0TR5acO/oUrPdgUMV0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js" integrity="sha512-5ZaIVitkxQlLwF2UrI66/cIvkq2f2hqlHuVaQqEUQb+U0zGATpDHWf9dQWbrfXVo0U0mZPrE6z1vUmOy6q5j+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-}

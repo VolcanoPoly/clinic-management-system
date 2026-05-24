@@ -13,7 +13,7 @@
                     Enter your CPR and appointment reference number to see upcoming bookings and recent visits. This page is available without logging in.
                 </p>
 
-                <form asp-action="Index" method="post" class="row g-3">
+                <form asp-action="Index" method="post" class="row g-3 needs-validation" novalidate>
                     @Html.AntiForgeryToken()
                     <div class="col-md-6">
                         <label asp-for="Cpr" class="form-label"></label>
@@ -128,7 +128,3 @@
     </div>
 </div>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
-}

@@ -17,7 +17,7 @@
                     <h5 class="mb-0">Create Visit Record</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-action="CreateVisitRecord" method="post">
+                    <form asp-action="CreateVisitRecord" method="post" class="needs-validation" novalidate>
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="AppointmentId" />
 

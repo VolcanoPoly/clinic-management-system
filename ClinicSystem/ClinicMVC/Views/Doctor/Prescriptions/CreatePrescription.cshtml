@@ -17,12 +17,14 @@
                     <h5 class="mb-0">Create Prescription</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-action="CreatePrescription" method="post">
+                    <form asp-action="CreatePrescription" method="post" id="prescription-form" class="needs-validation" novalidate>
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="VisitRecordId" />
 
 
                         <h6 class="mb-3">Medication Items</h6>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                        <div id="prescriptionValidationFeedback" class="text-danger small d-none mb-2" role="alert"></div>
                         <div id="prescriptionItems">
                             @for (int i = 0; i < Model.Items.Count; i++)
                             {
@@ -30,20 +32,24 @@
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-md-6 mb-2">
-                                                <label class="form-label small">Medication Name</label>
-                                                <input asp-for="Items[i].MedicationName" class="form-control" />
+                                                <label asp-for="Items[i].MedicationName" class="form-label small"></label>
+                                                <input asp-for="Items[i].MedicationName" class="form-control" required />
+                                                <span asp-validation-for="Items[i].MedicationName" class="text-danger small"></span>
                                             </div>
                                             <div class="col-md-3 mb-2">
-                                                <label class="form-label small">Dosage</label>
-                                                <input asp-for="Items[i].Dosage" class="form-control" placeholder="e.g., 500mg" />
+                                                <label asp-for="Items[i].Dosage" class="form-label small"></label>
+                                                <input asp-for="Items[i].Dosage" class="form-control" placeholder="e.g., 500mg" required />
+                                                <span asp-validation-for="Items[i].Dosage" class="text-danger small"></span>
                                             </div>
                                             <div class="col-md-3 mb-2">
-                                                <label class="form-label small">Frequency</label>
-                                                <input asp-for="Items[i].Frequency" class="form-control" placeholder="e.g., 3x daily" />
+                                                <label asp-for="Items[i].Frequency" class="form-label small"></label>
+                                                <input asp-for="Items[i].Frequency" class="form-control" placeholder="e.g., 3x daily" required />
+                                                <span asp-validation-for="Items[i].Frequency" class="text-danger small"></span>
                                             </div>
                                             <div class="col-md-3 mb-2">
-                                                <label class="form-label small">Duration</label>
-                                                <input asp-for="Items[i].Duration" class="form-control" placeholder="e.g., 7 days" />
+                                                <label asp-for="Items[i].Duration" class="form-label small"></label>
+                                                <input asp-for="Items[i].Duration" class="form-control" placeholder="e.g., 7 days" required />
+                                                <span asp-validation-for="Items[i].Duration" class="text-danger small"></span>
                                             </div>
                                             <div class="col-md-9 mb-2">
                                                 <label class="form-label small">Instructions</label>
