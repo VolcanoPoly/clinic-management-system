@@ -2,41 +2,127 @@
 @{
     ViewData["Title"] = "Manager Login";
     ViewData["AuthPage"] = true;
+    ViewData["HideChrome"] = true;
 }
 
-<div class="auth-page">
-    <div class="auth-card shadow-lg rounded-4 p-5">
-        <div class="text-center mb-4">
-            <img src="~/images/logo.svg" alt="MedCenter" style="width:60px;height:60px;" />
-            <h1 class="h4 mt-3">Manager Login</h1>
-            <p class="text-muted">Sign in with your clinic manager account to access reports.</p>
+<div class="auth-split-wrapper">
+
+    @* ── Left branding panel ── *@
+    <div class="auth-split-left">
+        <div class="auth-split-brand">
+            <img src="~/images/logo.svg" alt="MedCenter" class="auth-split-logo" />
+            <h1 class="auth-split-title">MedCenter</h1>
+            <p class="auth-split-sub">Reporting &amp; Analytics Portal</p>
         </div>
 
-        <form asp-action="Login" method="post" class="needs-validation" novalidate>
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <ul class="auth-feature-list">
+            <li>
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Real-time appointment analytics</span>
+            </li>
+            <li>
+                <i class="fa-solid fa-user-doctor"></i>
+                <span>Doctor utilization &amp; performance</span>
+            </li>
+            <li>
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Booking trends &amp; cancellation rates</span>
+            </li>
+            <li>
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Manager-only secure access</span>
+            </li>
+        </ul>
 
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" placeholder="manager@clinic.com" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+        <p class="auth-split-copy">&copy; 2026 MedCenter Reporting System</p>
+    </div>
+
+    @* ── Right form panel ── *@
+    <div class="auth-split-right">
+        <div class="auth-form-card">
+
+            <div class="auth-form-header">
+                <div class="auth-form-icon">
+                    <i class="fa-solid fa-chart-pie" style="font-size:1.4rem;color:white;"></i>
+                </div>
+                <h2>Welcome back</h2>
+                <p>Sign in to access your reporting dashboard</p>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" type="password" placeholder="Password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+            <div class="auth-form-body">
+
+                <form asp-action="Login" method="post" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3 d-none"></div>
+
+                    <div class="auth-field">
+                        <label asp-for="Email">Email address</label>
+                        <div class="auth-input-wrap">
+                            <i class="fa-solid fa-envelope auth-input-icon"></i>
+                            <input asp-for="Email"
+                                   class="form-control auth-input"
+                                   placeholder="manager@clinic.com"
+                                   autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Password">Password</label>
+                        <div class="auth-input-wrap">
+                            <i class="fa-solid fa-lock auth-input-icon"></i>
+                            <input asp-for="Password"
+                                   id="pw-field"
+                                   class="form-control auth-input auth-input-has-toggle"
+                                   type="password"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password" />
+                            <button type="button" class="btn-pw-toggle" id="pw-toggle" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye" id="pw-toggle-icon"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <input asp-for="ReturnUrl" type="hidden" />
+
+                    <button type="submit" class="btn btn-auth-submit w-100 mt-2">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Sign in
+                    </button>
+                </form>
+
+                <p class="auth-switch-link mt-3 mb-0">
+                    <i class="fa-solid fa-circle-info me-1 opacity-50"></i>
+                    Use <strong>manager@clinic.com</strong> to access this portal
+                </p>
+
             </div>
-
-            <input asp-for="ReturnUrl" type="hidden" />
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg">Sign in</button>
-            </div>
-        </form>
-
-        <div class="mt-4 text-center text-muted small">
-            Use <strong>manager@clinic.com</strong> to access the reporting portal.
         </div>
     </div>
+
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const toggle = document.getElementById('pw-toggle');
+            const field  = document.getElementById('pw-field');
+            const icon   = document.getElementById('pw-toggle-icon');
+            if (toggle && field) {
+                toggle.addEventListener('click', function () {
+                    const isPassword = field.type === 'password';
+                    field.type = isPassword ? 'text' : 'password';
+                    icon.classList.toggle('fa-eye',        !isPassword);
+                    icon.classList.toggle('fa-eye-slash',   isPassword);
+                });
+            }
+
+            const summary = document.querySelector('[asp-validation-summary], .validation-summary-errors');
+            if (summary) {
+                const hasErrors = summary.querySelector('li') || summary.textContent.trim().length > 0;
+                if (hasErrors) summary.classList.remove('d-none');
+            }
+        })();
+    </script>
+}
