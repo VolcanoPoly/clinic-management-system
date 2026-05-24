@@ -12,6 +12,15 @@ builder.Services.AddHttpClient("ClinicApiClient", client =>
     client.BaseAddress = new Uri(
         builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7000");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    if (builder.Environment.IsDevelopment())
+    {
+        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    }
+    return handler;
 });
 
 // ── Session — stores the JWT token after the manager logs in ────────────────
