@@ -123,7 +123,7 @@ VALUES
     (@Doctor2TableId, (SELECT Id FROM Specializations WHERE Name = 'General Practice'));
 
 -- ============================================================
--- 7. Insert Doctor Schedules (Mon–Fri, 09:00–18:00)
+-- 7. Insert Doctor Schedules (Monï¿½Fri, 09:00ï¿½18:00)
 -- ============================================================
 INSERT INTO DoctorSchedules (DoctorId, DayOfWeek, StartTime, EndTime)
 SELECT @Doctor1TableId, v.Day, '09:00:00', '18:00:00'
@@ -187,7 +187,7 @@ INSERT INTO VisitRecords (AppointmentId, DoctorNotes, Diagnosis, Treatment, Crea
 VALUES
     (@Appt3Id,
      'Patient completed annual screening. All vitals within normal range.',
-     'Healthy — no abnormalities detected',
+     'Healthy ï¿½ no abnormalities detected',
      'Continue balanced diet and moderate exercise',
      DATEADD(day, -3, GETDATE())),
 
@@ -217,7 +217,7 @@ DECLARE @Presc4Id INT = (SELECT Id FROM Prescriptions WHERE VisitRecordId = @Vis
 INSERT INTO PrescriptionItems
     (PrescriptionId, MedicationName, Dosage, Frequency, Duration, Instructions)
 VALUES
-    -- For patient 1 (screening — vitamins)
+    -- For patient 1 (screening ï¿½ vitamins)
     (@Presc3Id, 'Vitamin D3',   '1000 IU', 'Once daily',      '30 days', 'Take with breakfast'),
     (@Presc3Id, 'Omega-3',      '1000mg',  'Once daily',      '30 days', 'Take with a meal'),
 

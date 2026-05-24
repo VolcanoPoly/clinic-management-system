@@ -1,0 +1,134 @@
+@model ClinicMVC.Models.ViewModels.PublicLookupViewModel
+
+@{
+    ViewData["Title"] = "Public Appointment Lookup";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-lg-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h1 class="h3 mb-3">Public appointment lookup</h1>
+                <p class="text-muted mb-4">
+                    Enter your CPR and appointment reference number to see upcoming bookings and recent visits. This page is available without logging in.
+                </p>
+
+                <form asp-action="Index" method="post" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-6">
+                        <label asp-for="Cpr" class="form-label"></label>
+                        <input asp-for="Cpr" class="form-control" placeholder="860101001" />
+                        <span asp-validation-for="Cpr" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Reference" class="form-label"></label>
+                        <input asp-for="Reference" class="form-control" placeholder="PAT-0001" />
+                        <span asp-validation-for="Reference" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i> Lookup appointments
+                        </button>
+                    </div>
+                </form>
+
+                @if (Model.HasSubmitted)
+                {
+                    <div class="mt-4">
+                        <div class="alert @(Model.LookupSuccess ? "alert-success" : "alert-warning")" role="alert">
+                            @Model.Message
+                        </div>
+
+                        @if (Model.LookupSuccess && Model.LookupResult != null)
+                        {
+                            <div class="mb-4">
+                                <h2 class="h5">Patient: @Model.LookupResult.PatientName</h2>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="h6">Upcoming appointments</h3>
+                                @if (Model.LookupResult.UpcomingAppointments.Any())
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Date & time</th>
+                                                    <th>Doctor</th>
+                                                    <th>Specialization</th>
+                                                    <th>Status</th>
+                                                    <th>Notes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var appointment in Model.LookupResult.UpcomingAppointments)
+                                                {
+                                                    <tr>
+                                                        <td>@appointment.AppointmentDateTime.ToString("MMM d, yyyy h:mm tt")</td>
+                                                        <td>@appointment.DoctorName</td>
+                                                        <td>@appointment.Specialization</td>
+                                                        <td>@appointment.Status</td>
+                                                        <td>@appointment.Notes</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info mb-0">
+                                        No upcoming appointments were found for this patient.
+                                    </div>
+                                }
+                            </div>
+
+                            <div>
+                                <h3 class="h6">Recent visits</h3>
+                                @if (Model.LookupResult.LastThreeVisits.Any())
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Doctor</th>
+                                                    <th>Specialization</th>
+                                                    <th>Diagnosis</th>
+                                                    <th>Treatment</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var visit in Model.LookupResult.LastThreeVisits)
+                                                {
+                                                    <tr>
+                                                        <td>@visit.VisitDate.ToString("MMM d, yyyy")</td>
+                                                        <td>@visit.DoctorName</td>
+                                                        <td>@visit.Specialization</td>
+                                                        <td>@visit.Diagnosis</td>
+                                                        <td>@visit.Treatment</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info mb-0">
+                                        No recent visit records are available.
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+}
