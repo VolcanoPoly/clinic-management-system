@@ -22,27 +22,47 @@
                     <strong>Add New Leave</strong>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-action="SchedulesLeaveCreate" class="needs-validation" novalidate>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Please fix the following errors:</strong>
+                            <ul class="mb-0">
+                                @foreach (var key in ViewData.ModelState.Keys)
+                                {
+                                    var modelState = ViewData.ModelState[key];
+                                    if (modelState.Errors.Count > 0)
+                                    {
+                                        foreach (var error in modelState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form method="post" asp-action="SchedulesLeaveCreate" asp-route-doctorId="@Model.DoctorId" class="needs-validation" novalidate>
                         @Html.AntiForgeryToken()
-                        <input type="hidden" name="doctorId" value="@Model.DoctorId" />
 
                         <div class="mb-3">
-                            <label for="StartDate" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="StartDate" 
-                                   name="startDateString" required />
+                            <label asp-for="LeaveForm.StartDateString" class="form-label"></label>
+                            <input asp-for="LeaveForm.StartDateString" type="date" class="form-control" />
+                            <span asp-validation-for="LeaveForm.StartDateString" class="text-danger small"></span>
                             <div class="invalid-feedback">Start date is required.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="EndDate" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="EndDate" 
-                                   name="endDateString" required />
+                            <label asp-for="LeaveForm.EndDateString" class="form-label"></label>
+                            <input asp-for="LeaveForm.EndDateString" type="date" class="form-control" />
+                            <span asp-validation-for="LeaveForm.EndDateString" class="text-danger small"></span>
                             <div class="invalid-feedback">End date is required.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="Reason" class="form-label">Reason (Optional)</label>
-                            <textarea class="form-control" id="Reason" name="reason" rows="3"></textarea>
+                            <label asp-for="LeaveForm.Reason" class="form-label">Reason (Optional)</label>
+                            <textarea asp-for="LeaveForm.Reason" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="LeaveForm.Reason" class="text-danger small"></span>
                         </div>
 
                         <button type="submit" class="btn btn-success">
