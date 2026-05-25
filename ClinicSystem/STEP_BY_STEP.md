@@ -10,7 +10,7 @@
 
 ---
 
-### Step 1 — `ALI`
+### Step 1 — `Member 1`
 **Install required software on your machine**
 
 - [x] Download and install **Visual Studio 2022 Community** (free)
@@ -23,7 +23,7 @@
 
 ---
 
-### Step 2 — `ALI`
+### Step 2 — `Member 1`
 **Create the GitHub repository**
 
 - [x] Go to github.com and log in with your account
@@ -41,7 +41,7 @@
 
 ---
 
-### Step 3 — `ALI`
+### Step 3 — `Member 1`
 **Open Visual Studio and create the solution**
 
 - [x] Open Visual Studio 2022
@@ -74,7 +74,7 @@
 
 ---
 
-### Step 6 — `ALI` ✅ COMPLETED
+### Step 6 — `Member 1` ✅ COMPLETED
 **First commit — push the empty solution to GitHub**
 
 - [x] In your terminal (inside the repo folder), run:
@@ -109,7 +109,7 @@
 
 ---
 
-### Step 9 — `ALI`
+### Step 9 — `Member 1`
 **Update connection string and register DbContext**
 
 - [x] Open `ClinicAPI/appsettings.json`
@@ -124,7 +124,7 @@
 
 ---
 
-### Step 10 — `ALI`
+### Step 10 — `Member 1`
 **Create and run the first EF Core migration**
 
 - [x] Open **Tools → NuGet Package Manager → Package Manager Console**
@@ -151,7 +151,7 @@
 
 ---
 
-### Step 12 — `ALI`
+### Step 12 — `Member 1`
 **Commit the database layer**
 
 ```bash
@@ -186,7 +186,7 @@ git push origin main
 
 ---
 
-### Step 15 — `ALI`
+### Step 15 — `Member 2`
 **Commit authentication work**
 
 ```bash
@@ -214,7 +214,7 @@ git push origin main
 
 ---
 
-### Step 17 — `ALI`
+### Step 17 — `Member 3`
 **Commit doctor management features**
 
 ```bash
@@ -239,7 +239,7 @@ git push origin main
 
 ---
 
-### Step 19 — `ALI`
+### Step 19 — `Member 2`
 **Commit booking feature** ✅ COMPLETED
 
 ```bash
@@ -266,7 +266,7 @@ git push origin main
 
 ---
 
-### Step 21 — `ALI`
+### Step 21 — `Member 2`
 **Commit lifecycle management** ✅ COMPLETED
 
 ```bash
@@ -291,7 +291,7 @@ git push origin main
 
 ---
 
-### Step 23 — `ALI`
+### Step 23 — `Member 3`
 **Commit visit records and prescriptions**
 
 ```bash
@@ -316,7 +316,7 @@ git push origin main
 
 ---
 
-### Step 25 — `ALI`
+### Step 25 — `Member 2`
 **Commit notifications**
 
 ```bash
@@ -346,7 +346,7 @@ git push origin main
 
 ---
 
-### Step 27 — `ALI`
+### Step 27 — `Member 1`
 **Commit API endpoints**
 
 ```bash
@@ -372,7 +372,7 @@ git push origin main
 
 ---
 
-### Step 29 — `ALI`
+### Step 29 — `Member 4`
 **Commit public lookup page**
 
 ```bash
@@ -398,7 +398,7 @@ git push origin main
 
 ---
 
-### Step 31 — `ALI`
+### Step 31 — `Member 4`
 **Commit SignalR feature**
 
 ```bash
@@ -425,7 +425,7 @@ git push origin main
 
 ---
 
-### Step 33 — `ALI`
+### Step 33 — `Member 4`
 **Commit reporting application**
 
 ```bash
@@ -459,7 +459,7 @@ git push origin main
 
 ---
 
-### Step 36 — `ALI`
+### Step 36 — `Member 4`
 **Commit UI polish and validation**
 
 ```bash
@@ -482,7 +482,7 @@ git push origin main
 
 ---
 
-### Step 38 — `ALI`
+### Step 38 — `Member 4`
 **Commit enhancements**
 
 ```bash
@@ -497,7 +497,7 @@ git push origin main
 
 ---
 
-### Step 39 — `ALI`
+### Step 39 — `Member 4`
 **Receive Azure credentials from the polytechnic**
 
 - [ ] Contact your tutor/coordinator to receive your group's Azure account credentials
@@ -506,7 +506,7 @@ git push origin main
 
 ---
 
-### Step 40 — `ALI`
+### Step 40 — `Member 4`
 **Create Azure resources**
 
 In the Azure Portal:
@@ -537,7 +537,7 @@ In the Azure Portal:
 
 ---
 
-### Step 42 — `ALI`
+### Step 42 — `Member 4`
 **Deploy all three projects to Azure**
 
 In Visual Studio:
@@ -548,7 +548,7 @@ In Visual Studio:
 
 ---
 
-### Step 43 — `ALI`
+### Step 43 — `Member 4`
 **Run migrations and seed data on Azure SQL**
 
 - [ ] In Visual Studio Package Manager Console, run:
@@ -562,7 +562,7 @@ In Visual Studio:
 
 ---
 
-### Step 44 — `ALI`
+### Step 44 — `Member 4`
 **Test the deployed application**
 
 - [ ] Open `https://clinic-mvc.azurewebsites.net` — confirm the login page loads
@@ -583,7 +583,7 @@ In Visual Studio:
 
 ---
 
-### Step 46 — `ALI`
+### Step 46 — `Member 4`
 **Commit production config files**
 
 ```bash
@@ -610,7 +610,7 @@ git push origin main
 
 ---
 
-### Step 48 — `ALI`
+### Step 48 — `Member 4`
 **Draw the ERD diagram**
 
 - [ ] Go to dbdiagram.io (free, online)
@@ -621,7 +621,7 @@ git push origin main
 
 ---
 
-### Step 49 — `ALI`
+### Step 49 — `Member 4`
 **Fill in the project document (using tutor template)**
 
 - [ ] Open the template provided by the tutor
@@ -644,7 +644,7 @@ git push origin main
 
 ---
 
-### Step 50 — `ALI`
+### Step 50 — `Member 4`
 **Final submission**
 
 - [ ] Do a final commit:
@@ -661,13 +661,13 @@ git push origin main
 
 ---
 
-## STAGE 17 — Individual Reflection (Ali Only — 10%) (Member 1/2/3/4)
+## STAGE 17 — Individual Reflection (Member 1 Only — 10%) (Member 1/2/3/4)
 
 > Due: Week 12 (24th–28th May 2026) — submit this BEFORE the project deadline so you do not forget.
 
 ---
 
-### Step 51 — `ALI`
+### Step 51 — `Member 1`
 **Write the Contribution Table**
 
 - [ ] Go through your Git commit history on GitHub
@@ -681,7 +681,7 @@ git push origin main
 
 ---
 
-### Step 52 — `ALI`
+### Step 52 — `Member 1`
 **Write the Technical Decisions section (2–3 decisions)**
 
 For each decision, write:
@@ -696,7 +696,7 @@ Good decisions to write about:
 
 ---
 
-### Step 53 — `ALI`
+### Step 53 — `Member 1`
 **Write the Technical Challenge section (1 challenge)**
 
 Write about a real problem you hit and solved. For example:
@@ -708,7 +708,7 @@ Include: the actual error message, the code that was wrong, what you changed, an
 
 ---
 
-### Step 54 — `ALI`
+### Step 54 — `Member 1`
 **Submit the individual reflection**
 
 - [ ] Add screenshots of pages you worked on
@@ -718,7 +718,7 @@ Include: the actual error message, the code that was wrong, what you changed, an
 
 ---
 
-### Step 55 — `ALI`
+### Step 55 — `Member 1`
 **Attend in-person observation with tutor**
 
 Prepare to explain (without notes):
@@ -752,7 +752,7 @@ Prepare to explain (without notes):
 | 14 — Enhancements | 37–38 | Member 4 | Bonus features for 5% extra marks |
 | 15 — Azure | 39–46 | Member 4 | Provision resources, deploy all 3 apps, seed Azure DB |
 | 16 — Docs | 47–50 | Member 4 | ERD, project document, submit on portal |
-| 17 — Reflection | 51–55 | Ali ONLY | Contribution table, decisions, challenge, in-person |
+| 17 — Reflection | 51–55 | Member 1 ONLY | Contribution table, decisions, challenge, in-person |
 
 **Total steps: 55**  
 **Deadline: 30 May 2026, 11:55 PM (project) | 24–28 May 2026 (reflection)**
