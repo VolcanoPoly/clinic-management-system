@@ -187,7 +187,14 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<AppointmentHub>("/hubs/appointment");
 
-// ── Seed development data on startup ───────────────────────────────────────
+// ── Run EF migrations on startup (creates schema on Azure SQL automatically) ─
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+
+// ── Seed development data on startup ────────────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
