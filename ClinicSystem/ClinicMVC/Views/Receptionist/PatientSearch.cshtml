@@ -1,0 +1,72 @@
+@model List<ClinicMVC.Models.ViewModels.PatientSearchResultViewModel>
+@{
+    ViewData["Title"] = "Patient Search";
+}
+
+<div class="d-flex align-items-center mb-4" data-aos="fade-down">
+    <a asp-action="Dashboard" class="btn btn-outline-secondary me-3">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div>
+        <h2 class="mb-0"><i class="fa-solid fa-magnifying-glass me-2"></i>Patient Search</h2>
+        <p class="text-muted mb-0">Search by name or CPR number</p>
+    </div>
+</div>
+
+<form method="get" asp-action="PatientSearch" class="mb-4" data-aos="fade-up">
+    <div class="input-group input-group-lg" style="max-width:520px;">
+        <span class="input-group-text bg-white border-end-0">
+            <i class="fa-solid fa-magnifying-glass text-muted"></i>
+        </span>
+        <input type="text" name="query" value="@ViewBag.Query" class="form-control border-start-0 ps-0"
+               placeholder="Patient name or CPR number…" autofocus />
+        <button type="submit" class="btn btn-primary px-4">Search</button>
+    </div>
+</form>
+
+@if (ViewBag.Query != null)
+{
+    if (!Model.Any())
+    {
+        <div class="alert alert-info" data-aos="fade-up">
+            No patients found matching <strong>@ViewBag.Query</strong>.
+        </div>
+    }
+    else
+    {
+        <p class="text-muted mb-2" data-aos="fade-up">@Model.Count result(s) for <strong>@ViewBag.Query</strong></p>
+
+        <div class="table-responsive" data-aos="fade-up">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>CPR</th>
+                        <th>Date of Birth</th>
+                        <th>Blood Type</th>
+                        <th>Email</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td><strong>@p.FullName</strong></td>
+                            <td><code>@p.CPRNumber</code></td>
+                            <td>@p.DateOfBirth.ToString("dd MMM yyyy")</td>
+                            <td>@(string.IsNullOrEmpty(p.BloodType) ? "—" : p.BloodType)</td>
+                            <td class="text-muted small">@p.Email</td>
+                            <td>
+                                <a asp-controller="Appointment" asp-action="Book"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-calendar-plus me-1"></i>Book
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

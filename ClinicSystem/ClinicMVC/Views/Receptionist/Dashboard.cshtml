@@ -8,6 +8,49 @@
     <p>Efficiently manage patient flow, bookings, and check-ins.</p>
 </div>
 
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0">
+        <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon" style="background:#dbeafe; color:#1a6fc4;">
+                <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <div class="stat-title">Today's Total</div>
+            <div class="stat-value">@ViewBag.TodayTotal</div>
+            <div class="stat-desc">appointments scheduled</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60">
+        <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon" style="background:#fef3c7; color:#b45309;">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="stat-title">Pending</div>
+            <div class="stat-value">@ViewBag.Pending</div>
+            <div class="stat-desc">awaiting confirmation</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120">
+        <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon" style="background:#e0f2fe; color:#0369a1;">
+                <i class="fa-solid fa-person-walking-arrow-right"></i>
+            </div>
+            <div class="stat-title">In Clinic</div>
+            <div class="stat-value">@ViewBag.CheckedIn</div>
+            <div class="stat-desc">checked in / in progress</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180">
+        <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon" style="background:#d1fae5; color:#065f46;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-title">Completed</div>
+            <div class="stat-value">@ViewBag.Completed</div>
+            <div class="stat-desc">seen today</div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
         <a asp-controller="Appointment" asp-action="Book" class="stat-card">
@@ -34,14 +77,14 @@
     </div>
 
     <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
-        <div class="stat-card" style="cursor:default; opacity:.65;">
-            <div class="stat-icon" style="background:#f3f4f6; color:#9ca3af;">
+        <a asp-action="PatientSearch" class="stat-card">
+            <div class="stat-icon" style="background:#fdf4ff; color:#7e22ce;">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
             <div class="stat-title">Patient Search</div>
             <div class="stat-value">Find a Patient</div>
-            <div class="stat-desc">Search patient records and appointment history.</div>
-            <div class="stat-action" style="color:#9ca3af;">Coming Soon <i class="fa-solid fa-clock"></i></div>
-        </div>
+            <div class="stat-desc">Search patient records by name or CPR number.</div>
+            <div class="stat-action" style="color:#7e22ce;">Search <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
     </div>
 </div>
