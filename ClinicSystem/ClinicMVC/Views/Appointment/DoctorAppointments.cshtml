@@ -45,7 +45,7 @@
                             <td>@a.AppointmentDateTime.ToString("dd MMM yyyy")<br /><small class="text-muted">@a.AppointmentDateTime.ToString("hh:mm tt")</small></td>
                             <td>@a.PatientName</td>
                             <td>@a.SpecializationName</td>
-                            <td>@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td><partial name="_StatusBadge" model="a.Status" /></td>
                             <td><a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary">View</a></td>
                         </tr>
                     }
@@ -79,7 +79,7 @@
                             <td>@a.AppointmentDateTime.ToString("dd MMM yyyy")<br /><small>@a.AppointmentDateTime.ToString("hh:mm tt")</small></td>
                             <td>@a.PatientName</td>
                             <td>@a.SpecializationName</td>
-                            <td>@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td><partial name="_StatusBadge" model="a.Status" /></td>
                             <td><a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
                         </tr>
                     }

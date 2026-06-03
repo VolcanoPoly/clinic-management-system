@@ -60,7 +60,7 @@
                             <td>@a.PatientName</td>
                             <td>@a.DoctorName</td>
                             <td>@a.SpecializationName</td>
-                            <td class="status-cell" data-appointment-id="@a.Id">@Html.Partial("_StatusBadge", a.Status)</td>
+                            <td class="status-cell" data-appointment-id="@a.Id"><partial name="_StatusBadge" model="a.Status" /></td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary">Manage</a>
                             </td>

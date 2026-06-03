@@ -18,4 +18,12 @@
     <ProjectReference Include="..\ClinicAPI\ClinicAPI.csproj" />
   </ItemGroup>
 
+  <Target Name="RemoveClinicApiConfigFromMvcPublish" BeforeTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <ResolvedFileToPublish
+        Remove="@(ResolvedFileToPublish)"
+        Condition="$([System.String]::Copy('%(ResolvedFileToPublish.Identity)').Contains('/ClinicAPI/appsettings')) Or $([System.String]::Copy('%(ResolvedFileToPublish.Identity)').Contains('\ClinicAPI\appsettings'))" />
+    </ItemGroup>
+  </Target>
+
 </Project>

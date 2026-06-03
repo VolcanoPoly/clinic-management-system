@@ -342,7 +342,15 @@ namespace ClinicMVC.Controllers
             };
 
             _db.Appointments.Add(appointment);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "That slot is no longer available. Please choose another.";
+                return RedirectToAction(nameof(Book));
+            }
 
             // Notify the doctor
             var doctor = await _db.Doctors.Include(d => d.User)

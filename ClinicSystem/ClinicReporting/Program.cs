@@ -3,14 +3,17 @@
 //              All data is retrieved exclusively through HTTP calls to the Web API.
 
 var builder = WebApplication.CreateBuilder(args);
-// Explicitly bind to the ports to avoid conflicts with port 5000
-builder.WebHost.UseUrls("http://localhost:5053", "https://localhost:7298");
+if (builder.Environment.IsDevelopment())
+{
+    // Local-only ports. Azure App Service provides its own port binding in production.
+    builder.WebHost.UseUrls("http://localhost:5053", "https://localhost:7298");
+}
 
 // ── HttpClient — ALL data access goes through the ClinicAPI ─────────────────
 builder.Services.AddHttpClient("ClinicApiClient", client =>
 {
     client.BaseAddress = new Uri(
-        builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7000");
+        builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7053/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
 .ConfigurePrimaryHttpMessageHandler(() =>

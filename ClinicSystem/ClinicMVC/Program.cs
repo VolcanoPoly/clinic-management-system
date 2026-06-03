@@ -13,8 +13,11 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     ContentRootPath = currentDir
 });
 
-// Explicitly bind to the ports to avoid conflicts with port 5000
-builder.WebHost.UseUrls("http://localhost:5298", "https://localhost:7268");
+if (builder.Environment.IsDevelopment())
+{
+    // Local-only ports. Azure App Service provides its own port binding in production.
+    builder.WebHost.UseUrls("http://localhost:5298", "https://localhost:7268");
+}
 
 // ── Database & EF Core ─────────────────────────────────────────────────────-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -53,7 +56,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddHttpClient("ClinicApiClient", client =>
 {
     client.BaseAddress = new Uri(
-        builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7000");
+        builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7053/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 

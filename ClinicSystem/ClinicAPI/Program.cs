@@ -10,8 +10,11 @@ using ClinicAPI.Models;
 using ClinicAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
-// Explicitly bind to the ports to avoid conflicts with port 5000
-builder.WebHost.UseUrls("http://localhost:5235", "https://localhost:7053");
+if (builder.Environment.IsDevelopment())
+{
+    // Local-only ports. Azure App Service provides its own port binding in production.
+    builder.WebHost.UseUrls("http://localhost:5235", "https://localhost:7053");
+}
 
 // ── Database & EF Core ──────────────────────────────────────────────────────
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -86,8 +89,8 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                builder.Configuration["AllowedOrigins:MvcApp"] ?? "https://localhost:7001",
-                builder.Configuration["AllowedOrigins:ReportingApp"] ?? "https://localhost:7002"
+                builder.Configuration["AllowedOrigins:MvcApp"] ?? "https://localhost:7268",
+                builder.Configuration["AllowedOrigins:ReportingApp"] ?? "https://localhost:7298"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

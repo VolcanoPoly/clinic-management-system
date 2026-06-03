@@ -57,6 +57,12 @@ namespace ClinicAPI.Data
                 .HasForeignKey<Prescription>(p => p.VisitRecordId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<Appointment>()
+                .HasIndex(a => new { a.DoctorId, a.AppointmentDateTime })
+                .IsUnique()
+                .HasFilter("[Status] NOT IN (5, 6)")
+                .HasDatabaseName("IX_Appointments_Doctor_DateTime_Active");
+
             // Seed Roles
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Patient", NormalizedName = "PATIENT" },

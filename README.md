@@ -174,7 +174,7 @@ Three browser tabs will open automatically:
 
 | Application | URL |
 |---|---|
-| ClinicAPI (Swagger) | `https://localhost:7000` |
+| ClinicAPI (Swagger) | `https://localhost:7053/swagger` |
 | ClinicMVC (Main App) | `https://localhost:7268` |
 | ClinicReporting | `https://localhost:7298` |
 
@@ -187,32 +187,64 @@ Three browser tabs will open automatically:
 The database is pre-seeded with the following test accounts:
 
 ### Clinic Manager
-- **Email:** `manager@clinic.com`
+- **Email:** `manager@medcenter.com`
 - **Password:** `Manager@123`
 
 ### Receptionist
-- **Email:** `receptionist@clinic.com`
+- **Email:** `receptionist@medcenter.com`
 - **Password:** `Recept@123`
 
 ### Doctors
 
 | Name | Email | Password | Specializations |
 |---|---|---|---|
-| Dr. Sarah Ahmed | `sarah.ahmed@clinic.com` | `Doctor@123` | Cardiology, Internal Medicine |
-| Dr. Mohammed Ali | `mohammed.ali@clinic.com` | `Doctor@123` | Neurology |
-| Dr. Fatima Hassan | `fatima.hassan@clinic.com` | `Doctor@123` | Pediatrics, Family Medicine |
-| Dr. Omar Khalid | `omar.khalid@clinic.com` | `Doctor@123` | Orthopedics |
-| Dr. Layla Nasser | `layla.nasser@clinic.com` | `Doctor@123` | Dermatology |
-| Dr. Yusuf Ibrahim | `yusuf.ibrahim@clinic.com` | `Doctor@123` | Psychiatry, Internal Medicine |
+| Dr. Omar Hassan | `doctor1@medcenter.com` | `Doctor@123` | General Practice, Cardiology |
+| Dr. Fatima Al-Zahra | `doctor2@medcenter.com` | `Doctor@123` | General Practice, Pediatrics |
+| Dr. Ahmed Al-Nouri | `doctor3@medcenter.com` | `Doctor@123` | Neurology, General Practice |
+| Dr. Sara Khalifa | `doctor4@medcenter.com` | `Doctor@123` | Ophthalmology, ENT |
+| Dr. Tariq Al-Sayed | `doctor5@medcenter.com` | `Doctor@123` | Psychiatry |
+| Dr. Maryam Jaffar | `doctor6@medcenter.com` | `Doctor@123` | Gynecology, Dermatology |
 
 ### Patients
 
-| Name | Email | Password |
-|---|---|---|
-| Ahmed Al-Rashid | `ahmed.rashid@email.com` | `Patient@123` |
-| Mariam Al-Zahra | `mariam.zahra@email.com` | `Patient@123` |
+| Name | Email | Password | CPR | Reference |
+|---|---|---|---|---|
+| Yousef Mansoor | `patient1@medcenter.com` | `Patient@123` | `860101001` | `PAT-0001` |
+| Layla Qassim | `patient2@medcenter.com` | `Patient@123` | `920515002` | `PAT-0002` |
 
 You can also **register a new patient account** directly at `/Account/Register`.
+
+---
+
+## Azure Deployment Settings
+
+Create three Azure App Services: one each for `ClinicAPI`, `ClinicMVC`, and `ClinicReporting`. Do not put production secrets in `appsettings.json`; use App Service Configuration settings.
+
+### ClinicAPI App Settings
+
+| Name | Value |
+|---|---|
+| `ConnectionStrings__DefaultConnection` | Azure SQL connection string |
+| `JwtSettings__SecretKey` | A strong secret, at least 32 characters |
+| `JwtSettings__Issuer` | `ClinicAPI` |
+| `JwtSettings__Audience` | `ClinicClients` |
+| `AllowedOrigins__MvcApp` | Deployed MVC URL, e.g. `https://your-clinic-mvc.azurewebsites.net` |
+| `AllowedOrigins__ReportingApp` | Deployed Reporting URL, e.g. `https://your-clinic-reporting.azurewebsites.net` |
+
+### ClinicMVC App Settings
+
+| Name | Value |
+|---|---|
+| `ConnectionStrings__DefaultConnection` | Same Azure SQL connection string |
+| `ApiBaseUrl` | Deployed API URL, e.g. `https://your-clinic-api.azurewebsites.net/` |
+
+### ClinicReporting App Settings
+
+| Name | Value |
+|---|---|
+| `ApiBaseUrl` | Deployed API URL, e.g. `https://your-clinic-api.azurewebsites.net/` |
+
+After deployment, enable WebSockets on the MVC App Service if the SignalR waiting room/status board does not update live.
 
 ---
 
