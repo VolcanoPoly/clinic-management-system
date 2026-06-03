@@ -141,6 +141,9 @@ namespace ClinicMVC.Controllers
             if (visitRecord == null)
                 return NotFound();
 
+            if (!await PatientOwnsVisitRecordAsync(visitRecord))
+                return Forbid();
+
             var viewModel = new VisitRecordViewModel
             {
                 Id = visitRecord.Id,
@@ -174,6 +177,9 @@ namespace ClinicMVC.Controllers
             if (prescription == null)
                 return NotFound();
 
+            if (!await PatientOwnsPrescriptionAsync(prescription))
+                return Forbid();
+
             var viewModel = new PrescriptionViewModel
             {
                 Id = prescription.Id,
@@ -192,6 +198,24 @@ namespace ClinicMVC.Controllers
             };
 
             return View(viewModel);
+        }
+
+        private async Task<bool> PatientOwnsVisitRecordAsync(VisitRecord visitRecord)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || visitRecord.Appointment?.Patient == null)
+                return false;
+
+            return visitRecord.Appointment.Patient.UserId == user.Id;
+        }
+
+        private async Task<bool> PatientOwnsPrescriptionAsync(Prescription prescription)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || prescription.VisitRecord?.Appointment?.Patient == null)
+                return false;
+
+            return prescription.VisitRecord.Appointment.Patient.UserId == user.Id;
         }
     }
 }

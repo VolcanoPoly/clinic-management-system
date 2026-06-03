@@ -78,6 +78,15 @@ namespace ClinicMVC.Controllers
 
         public async Task<IActionResult> PatientHistory(int patientId)
         {
+            var doctorId = await GetCurrentDoctorIdAsync();
+            if (doctorId == null)
+                return NotFound("Doctor profile not found");
+
+            var hasTreatedPatient = await _dbContext.Appointments
+                .AnyAsync(a => a.PatientId == patientId && a.DoctorId == doctorId.Value);
+            if (!hasTreatedPatient)
+                return Forbid();
+
             var patient = await _dbContext.Patients
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.Id == patientId);
@@ -176,6 +185,9 @@ namespace ClinicMVC.Controllers
             if (visitRecord == null)
                 return NotFound();
 
+            if (!await DoctorOwnsVisitRecordAsync(visitRecord))
+                return Forbid();
+
             var viewModel = new VisitRecordViewModel
             {
                 Id = visitRecord.Id,
@@ -201,10 +213,25 @@ namespace ClinicMVC.Controllers
                     .ThenInclude(p => p.User)
                 .Include(a => a.Doctor)
                     .ThenInclude(d => d.User)
+                .Include(a => a.VisitRecord)
                 .FirstOrDefaultAsync(a => a.Id == appointmentId);
 
             if (appointment == null)
                 return NotFound();
+
+            var doctorId = await GetCurrentDoctorIdAsync();
+            if (doctorId == null || appointment.DoctorId != doctorId.Value)
+                return Forbid();
+
+            if (appointment.Status != AppointmentStatus.Completed)
+                return BadRequest("Visit records can only be created for completed appointments.");
+
+            var existingVisitRecordId = await _dbContext.VisitRecords
+                .Where(v => v.AppointmentId == appointmentId)
+                .Select(v => (int?)v.Id)
+                .FirstOrDefaultAsync();
+            if (existingVisitRecordId.HasValue)
+                return RedirectToAction(nameof(VisitRecordDetail), new { id = existingVisitRecordId.Value });
 
             var viewModel = new VisitRecordFormViewModel
             {
@@ -226,6 +253,29 @@ namespace ClinicMVC.Controllers
 
             try
             {
+                var doctorId = await GetCurrentDoctorIdAsync();
+                if (doctorId == null)
+                    return Unauthorized();
+
+                var appointment = await _dbContext.Appointments
+                    .Include(a => a.VisitRecord)
+                    .FirstOrDefaultAsync(a => a.Id == model.AppointmentId);
+
+                if (appointment == null)
+                    return NotFound();
+
+                if (appointment.DoctorId != doctorId.Value)
+                    return Forbid();
+
+                if (appointment.Status != AppointmentStatus.Completed)
+                {
+                    ModelState.AddModelError(string.Empty, "Visit records can only be created for completed appointments.");
+                    return View("~/Views/Doctor/VisitRecords/CreateVisitRecord.cshtml", model);
+                }
+
+                if (appointment.VisitRecord != null)
+                    return RedirectToAction(nameof(VisitRecordDetail), new { id = appointment.VisitRecord.Id });
+
                 var visitRecord = new VisitRecord
                 {
                     AppointmentId = model.AppointmentId,
@@ -236,13 +286,6 @@ namespace ClinicMVC.Controllers
                 };
 
                 _dbContext.VisitRecords.Add(visitRecord);
-
-                // Update appointment status
-                var appointment = await _dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == model.AppointmentId);
-                if (appointment != null)
-                {
-                    appointment.Status = AppointmentStatus.Completed;
-                }
 
                 await _dbContext.SaveChangesAsync();
 
@@ -280,6 +323,9 @@ namespace ClinicMVC.Controllers
             if (visitRecord == null)
                 return NotFound();
 
+            if (!await DoctorOwnsVisitRecordAsync(visitRecord))
+                return Forbid();
+
             var viewModel = new VisitRecordFormViewModel
             {
                 Id = id,
@@ -311,6 +357,9 @@ namespace ClinicMVC.Controllers
                 if (visitRecord == null)
                     return NotFound();
 
+                if (!await DoctorOwnsVisitRecordAsync(visitRecord))
+                    return Forbid();
+
                 visitRecord.DoctorNotes = model.DoctorNotes;
                 visitRecord.Diagnosis = model.Diagnosis;
                 visitRecord.Treatment = model.Treatment;
@@ -341,6 +390,12 @@ namespace ClinicMVC.Controllers
 
             if (visitRecord == null)
                 return NotFound();
+
+            if (!await DoctorOwnsVisitRecordAsync(visitRecord))
+                return Forbid();
+
+            if (visitRecord.Appointment?.Status != AppointmentStatus.Completed)
+                return BadRequest("Prescriptions can only be created for completed appointments.");
 
             // Check if prescription already exists
             var existing = await _dbContext.Prescriptions
@@ -376,6 +431,22 @@ namespace ClinicMVC.Controllers
                 if (doctor == null)
                     return Unauthorized();
 
+                var visitRecord = await _dbContext.VisitRecords
+                    .Include(v => v.Appointment)
+                    .FirstOrDefaultAsync(v => v.Id == model.VisitRecordId);
+
+                if (visitRecord == null)
+                    return NotFound();
+
+                if (visitRecord.Appointment?.DoctorId != doctor.Id)
+                    return Forbid();
+
+                if (visitRecord.Appointment.Status != AppointmentStatus.Completed)
+                {
+                    ModelState.AddModelError(string.Empty, "Prescriptions can only be created for completed appointments.");
+                    return View("~/Views/Doctor/Prescriptions/CreatePrescription.cshtml", model);
+                }
+
                 var prescription = new Prescription
                 {
                     VisitRecordId = model.VisitRecordId,
@@ -402,17 +473,17 @@ namespace ClinicMVC.Controllers
                 await _dbContext.SaveChangesAsync();
 
                 // Notify patient about new prescription
-                var visitRecord = await _dbContext.VisitRecords
+                var visitRecordWithPatient = await _dbContext.VisitRecords
                     .Include(v => v.Appointment)
                         .ThenInclude(a => a.Patient)
                             .ThenInclude(p => p.User)
                     .FirstOrDefaultAsync(v => v.Id == model.VisitRecordId);
 
-                if (visitRecord?.Appointment?.Patient?.User != null)
+                if (visitRecordWithPatient?.Appointment?.Patient?.User != null)
                     await _notifications.SendNotificationAsync(
-                        visitRecord.Appointment.Patient.User.Id,
+                        visitRecordWithPatient.Appointment.Patient.User.Id,
                         "A new prescription has been issued for you. You can view it in your medical history.",
-                        visitRecord.AppointmentId);
+                        visitRecordWithPatient.AppointmentId);
 
                 return RedirectToAction(nameof(ViewPrescription), new { id = prescription.Id });
             }
@@ -437,6 +508,9 @@ namespace ClinicMVC.Controllers
 
             if (prescription == null)
                 return NotFound();
+
+            if (!await DoctorOwnsPrescriptionAsync(prescription))
+                return Forbid();
 
             var viewModel = new PrescriptionViewModel
             {
@@ -473,6 +547,9 @@ namespace ClinicMVC.Controllers
             if (prescription == null)
                 return NotFound();
 
+            if (!await DoctorOwnsPrescriptionAsync(prescription))
+                return Forbid();
+
             var viewModel = new PrescriptionViewModel
             {
                 Id            = prescription.Id,
@@ -501,6 +578,9 @@ namespace ClinicMVC.Controllers
 
             if (prescription == null)
                 return NotFound();
+
+            if (!await DoctorOwnsPrescriptionAsync(prescription))
+                return Forbid();
 
             var viewModel = new PrescriptionFormViewModel
             {
@@ -531,6 +611,9 @@ namespace ClinicMVC.Controllers
 
                 if (prescription == null)
                     return NotFound();
+
+                if (!await DoctorOwnsPrescriptionAsync(prescription))
+                    return Forbid();
 
                 // Remove existing items
                 _dbContext.PrescriptionItems.RemoveRange(prescription.Items);
@@ -655,6 +738,40 @@ namespace ClinicMVC.Controllers
                 DayOfWeek.Saturday => "Saturday",
                 _ => ""
             };
+        }
+
+        private async Task<int?> GetCurrentDoctorIdAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return null;
+
+            return await _dbContext.Doctors
+                .Where(d => d.UserId == user.Id)
+                .Select(d => (int?)d.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<bool> DoctorOwnsVisitRecordAsync(VisitRecord visitRecord)
+        {
+            var doctorId = await GetCurrentDoctorIdAsync();
+            if (doctorId == null)
+                return false;
+
+            if (visitRecord.Appointment != null)
+                return visitRecord.Appointment.DoctorId == doctorId.Value;
+
+            return await _dbContext.VisitRecords
+                .AnyAsync(v => v.Id == visitRecord.Id && v.Appointment.DoctorId == doctorId.Value);
+        }
+
+        private async Task<bool> DoctorOwnsPrescriptionAsync(Prescription prescription)
+        {
+            var doctorId = await GetCurrentDoctorIdAsync();
+            if (doctorId == null)
+                return false;
+
+            return prescription.DoctorId == doctorId.Value;
         }
     }
 }

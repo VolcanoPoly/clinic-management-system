@@ -289,6 +289,13 @@ namespace ClinicMVC.Controllers
             int patientId;
             if (User.IsInRole("Receptionist") && vm.PatientId.HasValue)
             {
+                var patientExists = await _db.Patients.AnyAsync(p => p.Id == vm.PatientId.Value);
+                if (!patientExists)
+                {
+                    TempData["Error"] = "Please select a valid patient.";
+                    return RedirectToAction(nameof(Book));
+                }
+
                 patientId = vm.PatientId.Value;
             }
             else
@@ -300,6 +307,28 @@ namespace ClinicMVC.Controllers
                     return RedirectToAction(nameof(Book));
                 }
                 patientId = patient.Id;
+            }
+
+            if (vm.AppointmentDateTime <= DateTime.Now)
+            {
+                TempData["Error"] = "You cannot book an appointment in the past.";
+                return RedirectToAction(nameof(Book));
+            }
+
+            var doctorHasSpecialization = await _db.DoctorSpecializations.AnyAsync(ds =>
+                ds.DoctorId == vm.DoctorId && ds.SpecializationId == vm.SpecializationId);
+            if (!doctorHasSpecialization)
+            {
+                TempData["Error"] = "The selected doctor does not provide this specialization.";
+                return RedirectToAction(nameof(Book));
+            }
+
+            var selectedSlot = vm.AppointmentDateTime.TimeOfDay.ToString(@"hh\:mm");
+            var availableSlots = await _availability.GetAvailableSlotsAsync(vm.DoctorId, vm.AppointmentDateTime.Date);
+            if (!availableSlots.Contains(selectedSlot))
+            {
+                TempData["Error"] = "That slot is no longer available. Please choose another.";
+                return RedirectToAction(nameof(Book));
             }
 
             var appointment = new Appointment
@@ -512,6 +541,12 @@ namespace ClinicMVC.Controllers
                 return RedirectToAction(nameof(Details), new { id });
             }
 
+            if (User.IsInRole("Doctor"))
+            {
+                var doctor = await _db.Doctors.FirstOrDefaultAsync(d => d.UserId == user!.Id);
+                if (doctor == null || appointment.DoctorId != doctor.Id) return Forbid();
+            }
+
             var oldStatus = appointment.Status;
             appointment.Status = newStatus;
 
@@ -634,11 +669,7 @@ namespace ClinicMVC.Controllers
             }
             else if (user.IsInRole("Doctor"))
             {
-                if (current == AppointmentStatus.Requested)
-                    transitions.Add(AppointmentStatus.InProgress);
-                else if (current == AppointmentStatus.Confirmed)
-                    transitions.Add(AppointmentStatus.InProgress);
-                else if (current == AppointmentStatus.CheckedIn)
+                if (current == AppointmentStatus.CheckedIn)
                     transitions.Add(AppointmentStatus.InProgress);
                 else if (current == AppointmentStatus.InProgress)
                     transitions.AddRange(new[] { AppointmentStatus.Completed, AppointmentStatus.Missed });
