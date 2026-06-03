@@ -60,7 +60,7 @@ namespace ClinicAPI.Data
             builder.Entity<Appointment>()
                 .HasIndex(a => new { a.DoctorId, a.AppointmentDateTime })
                 .IsUnique()
-                .HasFilter("[Status] NOT IN (5, 6)")
+                .HasFilter("[Status] <> 5 AND [Status] <> 6")
                 .HasDatabaseName("IX_Appointments_Doctor_DateTime_Active");
 
             // Seed Roles

@@ -19,7 +19,7 @@ namespace ClinicAPI.Migrations
                 table: "Appointments",
                 columns: new[] { "DoctorId", "AppointmentDateTime" },
                 unique: true,
-                filter: "[Status] NOT IN (5, 6)");
+                filter: "[Status] <> 5 AND [Status] <> 6");
         }
 
         /// <inheritdoc />

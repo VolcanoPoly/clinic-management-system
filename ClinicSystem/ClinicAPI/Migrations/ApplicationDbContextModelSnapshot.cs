@@ -135,7 +135,7 @@ namespace ClinicAPI.Migrations
                     b.HasIndex("DoctorId", "AppointmentDateTime")
                         .IsUnique()
                         .HasDatabaseName("IX_Appointments_Doctor_DateTime_Active")
-                        .HasFilter("[Status] NOT IN (5, 6)");
+                        .HasFilter("[Status] <> 5 AND [Status] <> 6");
 
                     b.ToTable("Appointments");
                 });
